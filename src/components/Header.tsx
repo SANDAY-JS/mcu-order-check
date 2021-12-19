@@ -29,7 +29,7 @@ const Header: NextComponentType = () => {
           onClick={() => setDarkMode(!darkMode)}
         />
         <label htmlFor="switch">
-          <span>{darkMode ? <ImSun /> : <MdOutlineDarkMode />}</span>
+          {darkMode ? <ImSun /> : <MdOutlineDarkMode />}
         </label>
         <div className={styles.swImg} />
       </div>

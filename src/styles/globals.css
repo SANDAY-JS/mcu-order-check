@@ -9,6 +9,10 @@ body {
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
+html {
+  font-size: 0.625rem;
+}
+
 body {
   display: flex;
   align-items: center;
@@ -36,4 +40,15 @@ li {
 
 * {
   box-sizing: border-box;
+}
+
+@media screen and (min-width: 768px) {
+  html {
+    font-size: 0.75rem;
+  }
+}
+@media screen and (min-width: 1440px) {
+  html {
+    font-size: 0.875rem;
+  }
 }

@@ -1,9 +1,9 @@
 .header {
   width: 100%;
-  height: 8vh;
+  height: 10vh;
   max-height: 200px;
 
-  padding: 4px 60px;
+  padding: 4px 8px;
 
   display: flex;
   align-items: center;
@@ -18,6 +18,8 @@
   }
 
   h2 {
+    font-size: 2rem;
+    text-align: center;
   }
 
   /* === ボタンを表示するエリア ============================== */
@@ -28,7 +30,7 @@
     height: 40%;
 
     color: #222;
-    font-size: 20px;
+    font-size: 1.2rem;
     text-align: center;
 
     border-radius: 30px;
@@ -54,14 +56,14 @@
       border: 2px solid #222;
       border-radius: 30px;
 
-      span svg {
+      svg {
         position: absolute;
         transform: translateY(-50%);
         top: 50%;
         right: 12px;
 
         color: #222;
-        font-size: 24px;
+        font-size: 2rem;
       }
     }
 
@@ -72,7 +74,7 @@
 
     /* === 表示する文字（標準） ================================ */
     /* === 表示する文字（ONのとき） ============================ */
-    input[type="checkbox"]:checked + label span svg {
+    input[type="checkbox"]:checked + label svg {
       position: absolute;
       transform: translateY(-50%);
       top: 50%;
@@ -103,5 +105,11 @@
       --tx: 62px;
       background: #fafafa;
     }
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .header {
+    padding: 4px 60px;
   }
 }

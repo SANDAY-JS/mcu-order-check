@@ -1,14 +1,19 @@
 import type { GetStaticProps, NextPage } from "next";
 import Header from "../components/Header";
-import Main from "../components/Main";
+import DataStatus from "../components/DataStatus";
 import Selector from "../components/Selector";
+import { useReducer } from "react";
+import { initialState, reducerFunc } from "../utils/reducer";
 
 const Home: NextPage = ({ data }: any) => {
+  // dispatch -> reducerFunc() -> update state
+  const [state, dispatch] = useReducer(reducerFunc, initialState);
+
   return (
     <>
       <Header />
-      <Selector />
-      <Main data={data} />
+      <Selector dispatch={dispatch} />
+      <DataStatus data={data} state={state} />
     </>
   );
 };
@@ -22,7 +27,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
   const moviesData = await movies.json();
   const tvShowsData = await tvShows.json();
 
-  console.log({ moviesData, tvShowsData });
+  // console.log({ moviesData, tvShowsData });
 
   return {
     props: {

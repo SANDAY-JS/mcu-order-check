@@ -1,3 +1,4 @@
+export {};
 // import { GetStaticProps, NextPage } from "next";
 // import { createContext, useContext } from "react";
 

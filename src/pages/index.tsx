@@ -1,11 +1,13 @@
 import type { GetStaticProps, NextPage } from "next";
 import Header from "../components/Header";
 import Main from "../components/Main";
+import Selector from "../components/Selector";
 
 const Home: NextPage = ({ data }: any) => {
   return (
     <>
       <Header />
+      <Selector />
       <Main data={data} />
     </>
   );

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { SHOWS_STATES } from "../utils/reducer";
+import styles from "../styles/scss/DataStatus.module.scss";
 
 const DataStatus = ({ data, state }: any) => {
   const [shows, setShows] = useState(null);
@@ -52,18 +53,18 @@ const DataStatus = ({ data, state }: any) => {
   };
 
   useEffect(() => {
-    console.log(`%c${state}`, "color: yellow; font-weight: bold");
+    console.log(`%c${state}`, "color: yellow; font-weight: 900");
     invokeShowFunc();
   }, [state]);
 
   return (
-    <div>
+    <div className={styles.dataStatus}>
       <div>
         <p>MCU Shows↓</p>
         {/* <summary>Movies</summary> */}
         {shows &&
           shows.map((show, i) => (
-            <div key={i}>
+            <div key={i} style={{ margin: `20px 0px` }}>
               <p key={show.title}>{show.title}</p>
               <p key={show.release_date}>{show.release_date}</p>
             </div>

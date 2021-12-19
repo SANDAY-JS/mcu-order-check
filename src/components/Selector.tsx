@@ -3,7 +3,7 @@ import styles from "../styles/scss/Selector.module.scss";
 
 const Selector = ({ dispatch }) => {
   return (
-    <div>
+    <div className={styles.selector}>
       <div
         className={styles.changeOrder}
         onClick={() => dispatch(SHOWS_STATES.RELEASE_ORDER)}

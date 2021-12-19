@@ -1,13 +1,109 @@
 .header {
   width: 100%;
-  padding: 4px 0;
+  height: 8vh;
+  max-height: 200px;
+
+  padding: 4px 60px;
 
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
 
   background-color: skyblue;
 
+  .createdBy {
+    a {
+      text-decoration: underline;
+    }
+  }
+
   h2 {
+  }
+
+  /* === ボタンを表示するエリア ============================== */
+  .switchArea {
+    position: relative;
+
+    width: 100px;
+    height: 40%;
+
+    color: #222;
+    font-size: 20px;
+    text-align: center;
+
+    border-radius: 30px;
+    background-color: #fafafa;
+
+    &.darkMode {
+      color: #fafafa;
+      background-color: #222;
+    }
+
+    input[type="checkbox"] {
+      display: none;
+    }
+
+    /* === チェックボックスのラベル（標準） ==================== */
+    label {
+      position: relative;
+      cursor: pointer;
+
+      display: block;
+      box-sizing: border-box;
+      height: 100%;
+      border: 2px solid #222;
+      border-radius: 30px;
+
+      span::after {
+        content: "OFF";
+        position: absolute;
+        transform: translateY(-50%);
+        top: 50%;
+        right: 12px;
+
+        // padding: 0 0 0 28px;
+        color: #222;
+      }
+    }
+
+    /* === チェックボックスのラベル（ONのとき） ================ */
+    input[type="checkbox"]:checked + label {
+      border-color: #fafafa;
+    }
+
+    /* === 表示する文字（標準） ================================ */
+    /* === 表示する文字（ONのとき） ============================ */
+    input[type="checkbox"]:checked + label span::after {
+      content: "ON";
+      position: absolute;
+      transform: translateY(-50%);
+      top: 50%;
+      left: -28px;
+
+      color: #fafafa;
+      display: inline-block;
+    }
+
+    /* === チェックボックス ==================================== */
+
+    /* === 丸部分のSTYLE（標準） =============================== */
+    .swImg {
+      position: absolute;
+      transform: translate(var(--tx, 0), var(--ty, -50%));
+      top: 50%;
+      left: 8px;
+
+      width: 20px;
+      height: 20px;
+      background: #222;
+      border-radius: 50%;
+      transition: 0.2s;
+    }
+
+    /* === 丸部分のSTYLE（ONのとき） =========================== */
+    input[type="checkbox"]:checked ~ .swImg {
+      --tx: 62px;
+      background: #fafafa;
+    }
   }
 }

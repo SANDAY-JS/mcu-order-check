@@ -1,6 +1,8 @@
 import { NextComponentType } from "next";
 import { useEffect, useState } from "react";
 import styles from "../styles/scss/Header.module.scss";
+import { MdOutlineDarkMode } from "react-icons/md";
+import { ImSun } from "react-icons/im";
 
 const Header: NextComponentType = () => {
   const [darkMode, setDarkMode] = useState(false);
@@ -27,7 +29,7 @@ const Header: NextComponentType = () => {
           onClick={() => setDarkMode(!darkMode)}
         />
         <label htmlFor="switch">
-          <span />
+          <span>{darkMode ? <ImSun /> : <MdOutlineDarkMode />}</span>
         </label>
         <div className={styles.swImg} />
       </div>

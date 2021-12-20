@@ -21,7 +21,11 @@ const Header: NextComponentType = () => {
 
       <h2 className={styles.pageTitle}>MCU Reccomendation For You</h2>
 
-      <div className={`${styles.switchArea} ${darkMode && styles.darkMode}`}>
+      <div
+        className={`keepShowDetail ${styles.switchArea} ${
+          darkMode && styles.darkMode
+        }`}
+      >
         <input
           id="switch"
           type="checkbox"

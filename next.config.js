@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
   reactStrictMode: true,
-  images: { domains: ["raw.githubusercontent.com"] },
+  images: { domains: ["raw.githubusercontent.com", "players.brightcove.net"] },
 };

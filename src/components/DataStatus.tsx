@@ -2,14 +2,15 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { SHOWS_STATES } from "../utils/reducer";
 import styles from "../styles/scss/DataStatus.module.scss";
+import ShowDetail from "./ShowDetail";
 
 const DataStatus = ({ data, state }: any) => {
   const [shows, setShows] = useState(null);
+  const [selectedShow, setSelectedShow] = useState(null);
   const [combinedArr, setCombinedArr] = useState(
     data.movies.data.concat(data.tvShows.data)
   );
-  let baseUrl =
-    "https://raw.githubusercontent.com/AugustoMarcelo/mcuapi/master/covers/thor.jpg";
+  const noPicture = "/images/noimage.png";
 
   /* Methods */
   const invokeShowFunc = () => {
@@ -70,36 +71,40 @@ const DataStatus = ({ data, state }: any) => {
   };
 
   useEffect(() => {
-    console.log(`%c${state}`, "color: yellow; font-weight: 900");
     invokeShowFunc();
+    // console.log(`%c${state}`, "color: yellow; font-weight: 900");
   }, [state]);
 
   return (
     <div className={styles.dataStatus}>
-      <div>
-        {shows &&
-          shows.map((show, i) => (
+      {shows &&
+        shows.map((show, i) => (
+          <div
+            key={i}
+            className={`keepShowDetail ${styles.showContainer}`}
+            onClick={() => setSelectedShow(show)}
+          >
+            <p key={show.title} className={styles.showContainer__title}>
+              {show.title}
+            </p>
             <div
-              key={i}
-              className={styles.showContainer}
-              style={{ margin: `20px 0px` }}
+              key={show.cover_url}
+              className={styles.showContainer__imageWrap}
             >
-              <p key={show.title}>{show.title}</p>
-              <div
-                key={show.cover_url}
-                className={styles.showContainer__imageWrap}
-              >
-                <Image
-                  src={show.cover_url ?? baseUrl}
-                  alt={show.title}
-                  width={256}
-                  height={379}
-                  layout="intrinsic"
-                />
-              </div>
+              <Image
+                src={show.cover_url ?? noPicture}
+                alt={show.title}
+                width={256}
+                height={379}
+                layout="intrinsic"
+              />
             </div>
-          ))}
-      </div>
+          </div>
+        ))}
+
+      {selectedShow && (
+        <ShowDetail show={selectedShow} setSelectedShow={setSelectedShow} />
+      )}
     </div>
   );
 };

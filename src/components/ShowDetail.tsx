@@ -13,7 +13,9 @@ const ShowDetail = ({ show, setSelectedShow }) => {
 
   return (
     <div className={`need-darMode-status keepShowDetail ${styles.showDetail}`}>
-      <video src={show.trailer_url} />
+      <video autoPlay>
+        <source src={show.trailer_url ?? "/images/noimage.png"} />
+      </video>
       <h4>{show.title}</h4>
       <p>{show.release_date}</p>
       <p>Box Office: {show.box_office}</p>

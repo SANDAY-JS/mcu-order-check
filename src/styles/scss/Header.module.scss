@@ -26,8 +26,8 @@
   .switchArea {
     position: relative;
 
-    width: 100px;
-    height: 40%;
+    width: min(100px, 25%);
+    height: 50%;
 
     color: #222;
     font-size: 1.2rem;

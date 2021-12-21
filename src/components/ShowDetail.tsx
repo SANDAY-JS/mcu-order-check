@@ -23,6 +23,7 @@ const ShowDetail = ({ show, setSelectedShow }) => {
       ) : (
         <Image
           src={"/images/novideo.jpg"}
+          alt={show.title}
           layout="intrinsic"
           width={352}
           height={180}

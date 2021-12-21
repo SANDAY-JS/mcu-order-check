@@ -1,9 +1,18 @@
 import { SHOWS_STATES } from "../utils/reducer";
 import styles from "../styles/scss/Selector.module.scss";
+import { FcSearch } from "react-icons/fc";
 
 const Selector = ({ dispatch }) => {
   return (
-    <div className={`need-darMode-status ${styles.selector}`}>
+    <div className={`${styles.selector}`}>
+      {/* Search Box */}
+      <div
+        className={styles.searchContainer}
+        // onClick={() => dispatch(SHOWS_STATES.BOX_OFFICE)}
+      >
+        <FcSearch className={styles.searchIcon} />
+        <input type="text" className={styles.textInput} />
+      </div>
       <div
         className={styles.changeOrder}
         onClick={() => dispatch(SHOWS_STATES.RELEASE_ORDER)}

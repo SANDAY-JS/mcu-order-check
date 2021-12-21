@@ -6,7 +6,9 @@
 
   width: 80%;
   max-width: 400px;
+  max-height: 80vh;
   padding: 8px 20px;
+  overflow: scroll;
 
   display: flex;
   flex-direction: column;

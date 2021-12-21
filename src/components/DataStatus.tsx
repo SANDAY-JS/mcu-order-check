@@ -21,6 +21,9 @@ const DataStatus = ({ data, state }: any) => {
       case SHOWS_STATES.BOX_OFFICE:
         return showBoxOfficeOrder();
 
+      case SHOWS_STATES.PHASE:
+        return showPhaseOrder(1);
+
       case SHOWS_STATES.RESET:
         return setShows(null);
 
@@ -69,6 +72,9 @@ const DataStatus = ({ data, state }: any) => {
     const sortedArr = arr.sort((a, b) => b.box_office - a.box_office);
     return sortedArr;
   };
+
+  /* Phase Order */
+  const showPhaseOrder = (num: number) => {};
 
   useEffect(() => {
     invokeShowFunc();

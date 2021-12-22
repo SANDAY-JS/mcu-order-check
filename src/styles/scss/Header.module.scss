@@ -22,12 +22,13 @@
     text-align: center;
   }
 
-  /* === ボタンを表示するエリア ============================== */
+  /* === ボタンを表示するエリア ============== */
   .switchArea {
     position: relative;
 
     width: min(100px, 25%);
     height: 50%;
+    max-height: 40px;
 
     color: #222;
     font-size: 1.2rem;

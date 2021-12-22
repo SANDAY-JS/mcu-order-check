@@ -2,18 +2,25 @@ import type { GetStaticProps, NextPage } from "next";
 import Header from "../components/Header";
 import DataStatus from "../components/DataStatus";
 import Selector from "../components/Selector";
-import { useReducer } from "react";
+import { useReducer, useState } from "react";
 import { initialState, reducerFunc } from "../utils/reducer";
 
 const Home: NextPage = ({ data }: any) => {
   // dispatch -> reducerFunc() -> update state
   const [state, dispatch] = useReducer(reducerFunc, initialState);
 
+  // phase state
+  const [phaseState, setPhaseState] = useState([]);
+
   return (
     <>
       <Header />
-      <Selector dispatch={dispatch} />
-      <DataStatus data={data} state={state} />
+      <Selector
+        dispatch={dispatch}
+        phaseState={phaseState}
+        setPhaseState={setPhaseState}
+      />
+      <DataStatus data={data} state={state} phaseState={phaseState} />
     </>
   );
 };

@@ -5,11 +5,11 @@ import styles from "../styles/scss/DataStatus.module.scss";
 import ShowDetail from "./ShowDetail";
 
 const DataStatus = ({ data, state, phaseState }: any) => {
+  const initialShowData = data.movies.data.concat(data.tvShows.data);
+
   const [shows, setShows] = useState(null);
   const [selectedShow, setSelectedShow] = useState(null);
-  const [combinedArr, setCombinedArr] = useState(
-    data.movies.data.concat(data.tvShows.data)
-  );
+  const [combinedArr, setCombinedArr] = useState(initialShowData);
   const noPicture = "/images/noimage.png";
 
   const firstUpdate = useRef(true);
@@ -18,9 +18,11 @@ const DataStatus = ({ data, state, phaseState }: any) => {
   const invokeShowFunc = () => {
     switch (state) {
       case SHOWS_STATES.RELEASE_ORDER:
+        filterShowsWithPhase();
         return showReleaseOrder();
 
       case SHOWS_STATES.BOX_OFFICE:
+        filterShowsWithPhase();
         return showBoxOfficeOrder();
 
       case SHOWS_STATES.PHASE:
@@ -34,8 +36,17 @@ const DataStatus = ({ data, state, phaseState }: any) => {
     }
   };
 
+  const filterShowsWithPhase = () => {
+    if (!phaseState.length) return setCombinedArr(initialShowData);
+    return setCombinedArr(
+      combinedArr.filter((show) => phaseState.includes(show.phase))
+    );
+  };
+
   /* Release Order */
   const showReleaseOrder = () => {
+    console.log(phaseState);
+
     const sortedArr = sortByReleaseDate(combinedArr);
     return setShows(sortedArr);
   };
@@ -66,8 +77,6 @@ const DataStatus = ({ data, state, phaseState }: any) => {
   /* Box Office Order */
   const showBoxOfficeOrder = () => {
     const sortedArr = sortByBoxOffice(combinedArr);
-    console.log(sortedArr);
-
     return setShows(sortedArr);
   };
   const sortByBoxOffice = (arr: any[]) => {
@@ -77,6 +86,8 @@ const DataStatus = ({ data, state, phaseState }: any) => {
 
   /* Phase Order */
   const showPhaseOrder = (phaseNum: number[]) => {
+    console.log(phaseNum);
+
     const sortedArr = combinedArr.filter((show) =>
       phaseNum.includes(show.phase)
     );

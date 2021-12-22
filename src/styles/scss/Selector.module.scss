@@ -66,6 +66,10 @@ $BGColor: whitesmoke;
       right: 20px;
       bottom: 12px;
     }
+
+    &.selected {
+      background-color: rgb(189, 189, 189);
+    }
   }
 
   .phaseSelector {

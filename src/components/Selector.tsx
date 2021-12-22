@@ -4,6 +4,7 @@ import { FcSearch } from "react-icons/fc";
 import { useEffect, useRef } from "react";
 
 const Selector = ({ dispatch, phaseState, setPhaseState }) => {
+  // phase state
   const phaseCheckboxRef = useRef([]);
 
   const addPhaseState = (addedPhase: number) => {
@@ -19,8 +20,6 @@ const Selector = ({ dispatch, phaseState, setPhaseState }) => {
   };
 
   const resetShows = () => {
-    console.log(phaseCheckboxRef.current);
-
     phaseCheckboxRef.current.forEach((box) => (box.checked = false));
     return dispatch(SHOWS_STATES.RESET);
   };

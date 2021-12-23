@@ -5,6 +5,7 @@ $BGColor: whitesmoke;
   position: relative;
   padding: 40px;
 
+  color: #222 !important;
   border-bottom: 4px solid #222;
   background-color: rgb(170, 231, 255);
 
@@ -64,6 +65,10 @@ $BGColor: whitesmoke;
       position: absolute;
       right: 20px;
       bottom: 12px;
+    }
+
+    &.selected {
+      background-color: rgb(189, 189, 189);
     }
   }
 

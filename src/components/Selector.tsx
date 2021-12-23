@@ -1,8 +1,12 @@
-import { SHOWS_STATES } from "../utils/reducer";
 import styles from "../styles/scss/Selector.module.scss";
+import { SHOWS_STATES } from "../utils/reducer";
 import { FcSearch } from "react-icons/fc";
+import { useEffect, useRef } from "react";
 
 const Selector = ({ dispatch, phaseState, setPhaseState }) => {
+  // phase state
+  const phaseCheckboxRef = useRef([]);
+
   const addPhaseState = (addedPhase: number) => {
     if (!phaseState) return setPhaseState([addedPhase]);
 
@@ -13,6 +17,11 @@ const Selector = ({ dispatch, phaseState, setPhaseState }) => {
       return setPhaseState(phaseState.filter((state) => state !== addedPhase));
     // if not, add the phase to the array
     return setPhaseState([...phaseState, addedPhase]);
+  };
+
+  const resetShows = () => {
+    phaseCheckboxRef.current.forEach((box) => (box.checked = false));
+    return dispatch(SHOWS_STATES.RESET);
   };
 
   return (
@@ -45,6 +54,7 @@ const Selector = ({ dispatch, phaseState, setPhaseState }) => {
         <div className={styles.phaseSelector__item}>
           <label htmlFor="phase1">1</label>
           <input
+            ref={(el) => (phaseCheckboxRef.current[0] = el)}
             type="checkbox"
             id="phase1"
             onChange={() => addPhaseState(1)}
@@ -53,14 +63,16 @@ const Selector = ({ dispatch, phaseState, setPhaseState }) => {
         <div className={styles.phaseSelector__item}>
           <label htmlFor="phase2">2</label>
           <input
+            ref={(el) => (phaseCheckboxRef.current[1] = el)}
             type="checkbox"
-            id="phase12"
+            id="phase2"
             onChange={() => addPhaseState(2)}
           />
         </div>
         <div className={styles.phaseSelector__item}>
           <label htmlFor="phase3">3</label>
           <input
+            ref={(el) => (phaseCheckboxRef.current[2] = el)}
             type="checkbox"
             id="phase3"
             onChange={() => addPhaseState(3)}
@@ -69,6 +81,7 @@ const Selector = ({ dispatch, phaseState, setPhaseState }) => {
         <div className={styles.phaseSelector__item}>
           <label htmlFor="phase4">4</label>
           <input
+            ref={(el) => (phaseCheckboxRef.current[3] = el)}
             type="checkbox"
             id="phase4"
             onChange={() => addPhaseState(4)}
@@ -89,7 +102,7 @@ const Selector = ({ dispatch, phaseState, setPhaseState }) => {
       </div> */}
       <div
         className={`${styles.changeOrder} ${styles.resetButton}`}
-        onClick={() => dispatch(SHOWS_STATES.RESET)}
+        onClick={resetShows}
       >
         Reset
       </div>

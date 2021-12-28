@@ -1,42 +1,41 @@
 .dataStatus {
   padding: 40px;
-
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
+  overflow: hidden;
 
   .showContainer {
-    width: fit-content;
-
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-wrap: wrap;
     justify-content: center;
+    gap: 12px;
 
-    cursor: pointer;
-    overflow: hidden;
+    .showContainer__showItem {
+      width: fit-content;
 
-    .showContainer__title {
-      font-size: 1.2rem;
-      font-weight: bold;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
 
+      cursor: pointer;
       overflow: hidden;
-      max-width: 256px;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
 
-    .showContainer__imageWrap {
-      width: 100%;
-      max-width: 100%;
-      height: fit-content;
+      .showContainer__showItem__title {
+        font-size: 1.2rem;
+        font-weight: bold;
 
-      overflow: hidden;
+        overflow: hidden;
+        max-width: 256px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .showContainer__showItem__imageWrap {
+        width: 100%;
+        max-width: 100%;
+        height: fit-content;
+
+        overflow: hidden;
+      }
     }
   }
 }
-
-// body.darkMode{
-
-// }

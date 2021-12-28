@@ -12,6 +12,9 @@ const Home: NextPage = ({ data }: any) => {
   // phase state
   const [phaseState, setPhaseState] = useState<number[]>([]);
 
+  const [isReleaseOrder, setIsReleaseOrder] = useState(false);
+  const [isBoxOfficeOrder, setIsBoxOfficeOrder] = useState(false);
+
   return (
     <>
       <Header />
@@ -19,8 +22,17 @@ const Home: NextPage = ({ data }: any) => {
         dispatch={dispatch}
         phaseState={phaseState}
         setPhaseState={setPhaseState}
+        isBoxOfficeOrder={isBoxOfficeOrder}
+        setIsBoxOfficeOrder={setIsBoxOfficeOrder}
+        isReleaseOrder={isReleaseOrder}
+        setIsReleaseOrder={setIsReleaseOrder}
       />
-      <DataStatus data={data} state={state} phaseState={phaseState} />
+      <DataStatus
+        data={data}
+        state={state}
+        phaseState={phaseState}
+        isBoxOfficeOrder={isBoxOfficeOrder}
+      />
     </>
   );
 };
@@ -33,8 +45,6 @@ export const getStaticProps: GetStaticProps = async (context) => {
 
   const moviesData = await movies.json();
   const tvShowsData = await tvShows.json();
-
-  // console.log({ moviesData, tvShowsData });
 
   return {
     props: {

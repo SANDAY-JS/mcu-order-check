@@ -20,12 +20,16 @@ const Selector = ({ dispatch, phaseState, setPhaseState }) => {
   };
 
   const resetShows = () => {
+    // uncheck all checkboxes
     phaseCheckboxRef.current.forEach((box) => (box.checked = false));
+    // reset phaseState
+    setPhaseState([]);
+    // invoke the function
     return dispatch(SHOWS_STATES.RESET);
   };
 
   return (
-    <div className={`${styles.selector}`}>
+    <div className={styles.selector}>
       {/* Search Box */}
       <div
         className={styles.searchContainer}

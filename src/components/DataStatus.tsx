@@ -5,30 +5,35 @@ import styles from "../styles/scss/DataStatus.module.scss";
 import ShowDetail from "./ShowDetail";
 
 const DataStatus = ({ data, state, phaseState }: any) => {
+  const firstUpdate = useRef(true);
+  const noPicture = "/images/noimage.png";
   const initialShowData = data.movies.data.concat(data.tvShows.data);
 
+  /* ----------- States ----------- */
+  // 表示されている作品
   const [shows, setShows] = useState(null);
+  // クリックされた作品
   const [selectedShow, setSelectedShow] = useState(null);
-  const [combinedArr, setCombinedArr] = useState(initialShowData);
-  const noPicture = "/images/noimage.png";
+  // Showsの基本となるArray
+  const [baseShowsArr, setBaseShowsArr] = useState(initialShowData);
+  // "Box Office"のonとoffをチェック
+  const [isBoxOfficeOrder, setIsBoxOfficeorder] = useState(false);
 
-  const firstUpdate = useRef(true);
-
-  /* Methods */
+  /* --------- Methods --------- */
+  /* 適当な関数をinvokeする */
   const invokeShowFunc = () => {
     switch (state) {
       case SHOWS_STATES.RELEASE_ORDER:
-        filterShowsWithPhase();
         return showReleaseOrder();
 
       case SHOWS_STATES.BOX_OFFICE:
-        filterShowsWithPhase();
         return showBoxOfficeOrder();
 
       case SHOWS_STATES.PHASE:
         return showPhaseOrder(phaseState);
 
       case SHOWS_STATES.RESET:
+        setIsBoxOfficeorder(false);
         return setShows(null);
 
       default:
@@ -36,18 +41,31 @@ const DataStatus = ({ data, state, phaseState }: any) => {
     }
   };
 
-  const filterShowsWithPhase = () => {
-    if (!phaseState.length) return setCombinedArr(initialShowData);
-    return setCombinedArr(
-      combinedArr.filter((show) => phaseState.includes(show.phase))
+  const filterShowsWithCurrentPhase = () => {
+    if (!phaseState.length) {
+      console.log("phase is not set");
+      setBaseShowsArr(initialShowData);
+      return;
+    }
+
+    // 表示させる作品
+    const showsArr = baseShowsArr.filter((show) =>
+      phaseState.includes(show.phase)
     );
+
+    return setBaseShowsArr(showsArr);
   };
 
   /* Release Order */
   const showReleaseOrder = () => {
-    console.log(phaseState);
+    if (isBoxOfficeOrder) {
+      setIsBoxOfficeorder(false);
+    }
 
-    const sortedArr = sortByReleaseDate(combinedArr);
+    // Checks if some of phase checkboxes are checked
+    filterShowsWithCurrentPhase();
+
+    const sortedArr = sortByReleaseDate(baseShowsArr);
     return setShows(sortedArr);
   };
   // Sort Methods
@@ -75,8 +93,17 @@ const DataStatus = ({ data, state, phaseState }: any) => {
   };
 
   /* Box Office Order */
-  const showBoxOfficeOrder = () => {
-    const sortedArr = sortByBoxOffice(combinedArr);
+  const showBoxOfficeOrder = (fromPhaseFunction?: boolean) => {
+    // Set "isBoxOfficeOrder"
+    if (!isBoxOfficeOrder) {
+      setIsBoxOfficeorder(true);
+    }
+    // "showPhaseOrder"から発火された時はスキップ
+    if (!fromPhaseFunction) {
+      filterShowsWithCurrentPhase();
+    }
+    // 並べる
+    const sortedArr = sortByBoxOffice(baseShowsArr);
     return setShows(sortedArr);
   };
   const sortByBoxOffice = (arr: any[]) => {
@@ -85,18 +112,20 @@ const DataStatus = ({ data, state, phaseState }: any) => {
   };
 
   /* Phase Order */
-  const showPhaseOrder = (phaseNum: number[]) => {
-    console.log(phaseNum);
+  const showPhaseOrder = (phaseState) => {
+    console.log(`phase: %c ${phaseState}`, "color: yellow");
+    if (isBoxOfficeOrder) {
+      showBoxOfficeOrder(true);
+    }
 
-    const sortedArr = combinedArr.filter((show) =>
-      phaseNum.includes(show.phase)
+    const sortedArr = baseShowsArr.filter((show) =>
+      phaseState.includes(show.phase)
     );
     return setShows(sortedArr);
   };
 
   useEffect(() => {
     invokeShowFunc();
-    // console.log(`%c${state}`, "color: yellow; font-weight: 900");
   }, [state]);
 
   useEffect(() => {

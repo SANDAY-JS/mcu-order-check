@@ -10,7 +10,7 @@ const Home: NextPage = ({ data }: any) => {
   const [state, dispatch] = useReducer(reducerFunc, initialState);
 
   // phase state
-  const [phaseState, setPhaseState] = useState([]);
+  const [phaseState, setPhaseState] = useState<number[]>([]);
 
   return (
     <>

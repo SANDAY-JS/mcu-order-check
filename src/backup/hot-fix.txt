@@ -1,0 +1,3 @@
+An Error Occurs When...
+- Box Office -> Choose a Phase -> Choose One More Phase
+~ 

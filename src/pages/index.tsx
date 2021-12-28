@@ -31,6 +31,7 @@ const Home: NextPage = ({ data }: any) => {
         data={data}
         state={state}
         phaseState={phaseState}
+        isReleaseOrder={isReleaseOrder}
         isBoxOfficeOrder={isBoxOfficeOrder}
       />
     </>

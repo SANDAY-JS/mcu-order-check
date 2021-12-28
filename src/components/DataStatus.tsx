@@ -2,11 +2,17 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import ShowDetail from "./ShowDetail";
 import { SHOWS_STATES } from "../utils/reducer";
-
 import InitialShows from "./InitialShows";
+
 import styles from "../styles/scss/DataStatus.module.scss";
 
-const DataStatus = ({ data, state, phaseState, isBoxOfficeOrder }: any) => {
+const DataStatus = ({
+  data,
+  state,
+  phaseState,
+  isReleaseOrder,
+  isBoxOfficeOrder,
+}) => {
   const firstUpdate = useRef(true);
   const noPicture = "/images/noimage.png";
   const initialShowData = data.movies.data.concat(data.tvShows.data);
@@ -42,7 +48,6 @@ const DataStatus = ({ data, state, phaseState, isBoxOfficeOrder }: any) => {
 
   const filterShowsWithCurrentPhase = () => {
     if (!phaseState.length) {
-      console.log("phase is not set");
       setBaseShowsArr(initialShowData);
       return;
     }
@@ -56,9 +61,10 @@ const DataStatus = ({ data, state, phaseState, isBoxOfficeOrder }: any) => {
   };
 
   /* Release Order */
-  const showReleaseOrder = () => {
-    // Checks if some of phase checkboxes are checked
-    filterShowsWithCurrentPhase();
+  const showReleaseOrder = (fromPhaseFunction?: boolean) => {
+    if (!fromPhaseFunction) {
+      filterShowsWithCurrentPhase();
+    }
 
     const sortedArr = sortByReleaseDate(baseShowsArr);
     return setShows(sortedArr);
@@ -105,6 +111,9 @@ const DataStatus = ({ data, state, phaseState, isBoxOfficeOrder }: any) => {
   /* Phase Order */
   const showPhaseOrder = (phaseState) => {
     console.log(`phase: %c ${phaseState}`, "color: yellow");
+    if (isReleaseOrder) {
+      showReleaseOrder(true);
+    }
     if (isBoxOfficeOrder) {
       showBoxOfficeOrder(true);
     }
@@ -154,6 +163,8 @@ const DataStatus = ({ data, state, phaseState, isBoxOfficeOrder }: any) => {
                   width={256}
                   height={379}
                   layout="intrinsic"
+                  placeholder="blur"
+                  blurDataURL={show.cover_url ?? noPicture}
                 />
               </div>
             </div>

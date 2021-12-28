@@ -3,9 +3,17 @@ import { SHOWS_STATES } from "../utils/reducer";
 import { FcSearch } from "react-icons/fc";
 import { useEffect, useRef } from "react";
 
-const Selector = ({ dispatch, phaseState, setPhaseState }) => {
-  // phase state
-  const phaseCheckboxRef = useRef([]);
+const Selector = ({
+  dispatch,
+  phaseState,
+  setPhaseState,
+  isBoxOfficeOrder,
+  setIsBoxOfficeOrder,
+  isReleaseOrder,
+  setIsReleaseOrder,
+}) => {
+  // checkboxRef in phaseState
+  const filterCheckboxRef = useRef([]);
 
   const addPhaseState = (addedPhase: number) => {
     if (!phaseState) return setPhaseState([addedPhase]);
@@ -19,12 +27,31 @@ const Selector = ({ dispatch, phaseState, setPhaseState }) => {
     return setPhaseState([...phaseState, addedPhase]);
   };
 
+  const showReleaseOrder = () => {
+    if (isBoxOfficeOrder) {
+      setIsBoxOfficeOrder(false);
+    }
+    setIsReleaseOrder(!isReleaseOrder);
+    return dispatch(SHOWS_STATES.RELEASE_ORDER);
+  };
+
+  const showBoxOfficeOrder = () => {
+    if (isReleaseOrder) {
+      setIsReleaseOrder(false);
+    }
+    setIsBoxOfficeOrder(!isBoxOfficeOrder);
+
+    return dispatch(SHOWS_STATES.BOX_OFFICE);
+  };
+
   const resetShows = () => {
     // uncheck all checkboxes
-    phaseCheckboxRef.current.forEach((box) => (box.checked = false));
-    // reset phaseState
+    filterCheckboxRef.current.forEach((box) => (box.checked = false));
+    // reset phaseState, isBoxOfficeOrder, isReleaseOrder
     setPhaseState([]);
-    // invoke the function
+    setIsReleaseOrder(false);
+    setIsBoxOfficeOrder(false);
+
     return dispatch(SHOWS_STATES.RESET);
   };
 
@@ -38,18 +65,24 @@ const Selector = ({ dispatch, phaseState, setPhaseState }) => {
         <FcSearch className={styles.searchIcon} />
         <input type="text" className={styles.textInput} />
       </div>
+
+      {/* Release Order */}
       <div
-        className={styles.changeOrder}
-        onClick={() => dispatch(SHOWS_STATES.RELEASE_ORDER)}
+        className={`${styles.changeOrder} ${isReleaseOrder && styles.active}`}
+        onClick={showReleaseOrder}
       >
         Choose from Release Order
       </div>
+
+      {/* Box Office Order */}
       <div
-        className={styles.changeOrder}
-        onClick={() => dispatch(SHOWS_STATES.BOX_OFFICE)}
+        className={`${styles.changeOrder} ${isBoxOfficeOrder && styles.active}`}
+        onClick={showBoxOfficeOrder}
       >
         Choose from Box Office
       </div>
+
+      {/* Phase Order */}
       <div
         className={`${styles.changeOrder} ${styles.phaseSelector}`}
         onClick={() => dispatch(SHOWS_STATES.PHASE)}
@@ -58,7 +91,7 @@ const Selector = ({ dispatch, phaseState, setPhaseState }) => {
         <div className={styles.phaseSelector__item}>
           <label htmlFor="phase1">1</label>
           <input
-            ref={(el) => (phaseCheckboxRef.current[0] = el)}
+            ref={(el) => (filterCheckboxRef.current[0] = el)}
             type="checkbox"
             id="phase1"
             onChange={() => addPhaseState(1)}
@@ -67,7 +100,7 @@ const Selector = ({ dispatch, phaseState, setPhaseState }) => {
         <div className={styles.phaseSelector__item}>
           <label htmlFor="phase2">2</label>
           <input
-            ref={(el) => (phaseCheckboxRef.current[1] = el)}
+            ref={(el) => (filterCheckboxRef.current[1] = el)}
             type="checkbox"
             id="phase2"
             onChange={() => addPhaseState(2)}
@@ -76,7 +109,7 @@ const Selector = ({ dispatch, phaseState, setPhaseState }) => {
         <div className={styles.phaseSelector__item}>
           <label htmlFor="phase3">3</label>
           <input
-            ref={(el) => (phaseCheckboxRef.current[2] = el)}
+            ref={(el) => (filterCheckboxRef.current[2] = el)}
             type="checkbox"
             id="phase3"
             onChange={() => addPhaseState(3)}
@@ -85,25 +118,29 @@ const Selector = ({ dispatch, phaseState, setPhaseState }) => {
         <div className={styles.phaseSelector__item}>
           <label htmlFor="phase4">4</label>
           <input
-            ref={(el) => (phaseCheckboxRef.current[3] = el)}
+            ref={(el) => (filterCheckboxRef.current[3] = el)}
             type="checkbox"
             id="phase4"
             onChange={() => addPhaseState(4)}
           />
         </div>
       </div>
+
       {/* <div
         className={styles.changeOrder}
         onClick={() => dispatch(SHOWS_STATES.RELEASE_ORDER)}
       >
         Choose from Characters
       </div> */}
+
       {/* <div
         className={styles.changeOrder}
         onClick={() => dispatch(SHOWS_STATES.RELEASE_ORDER)}
       >
         Choose from Categories
       </div> */}
+
+      {/* Reset */}
       <div
         className={`${styles.changeOrder} ${styles.resetButton}`}
         onClick={resetShows}

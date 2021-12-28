@@ -1,0 +1,24 @@
+@use "./DataStatus.module.scss";
+
+.initialShowsContainer {
+  display: flex;
+  width: max(600%, 2500px);
+}
+
+.initialShowContainer {
+  width: 50%;
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  overflow-x: auto;
+
+  .initialShowContainer__showItem {
+    @extend .showContainer__showItem;
+
+    .initialShowContainer__showItem__imageWrap {
+      @extend .showContainer__showItem__imageWrap;
+    }
+  }
+}

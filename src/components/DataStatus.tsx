@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { SHOWS_STATES } from "../utils/reducer";
-import styles from "../styles/scss/DataStatus.module.scss";
 import ShowDetail from "./ShowDetail";
+import { SHOWS_STATES } from "../utils/reducer";
 
-const DataStatus = ({ data, state, phaseState }: any) => {
+import InitialShows from "./InitialShows";
+import styles from "../styles/scss/DataStatus.module.scss";
+
+const DataStatus = ({ data, state, phaseState, isBoxOfficeOrder }: any) => {
   const firstUpdate = useRef(true);
   const noPicture = "/images/noimage.png";
   const initialShowData = data.movies.data.concat(data.tvShows.data);
@@ -16,8 +18,6 @@ const DataStatus = ({ data, state, phaseState }: any) => {
   const [selectedShow, setSelectedShow] = useState(null);
   // Showsの基本となるArray
   const [baseShowsArr, setBaseShowsArr] = useState(initialShowData);
-  // "Box Office"のonとoffをチェック
-  const [isBoxOfficeOrder, setIsBoxOfficeorder] = useState(false);
 
   /* --------- Methods --------- */
   /* 適当な関数をinvokeする */
@@ -33,7 +33,6 @@ const DataStatus = ({ data, state, phaseState }: any) => {
         return showPhaseOrder(phaseState);
 
       case SHOWS_STATES.RESET:
-        setIsBoxOfficeorder(false);
         return setShows(null);
 
       default:
@@ -58,10 +57,6 @@ const DataStatus = ({ data, state, phaseState }: any) => {
 
   /* Release Order */
   const showReleaseOrder = () => {
-    if (isBoxOfficeOrder) {
-      setIsBoxOfficeorder(false);
-    }
-
     // Checks if some of phase checkboxes are checked
     filterShowsWithCurrentPhase();
 
@@ -94,10 +89,6 @@ const DataStatus = ({ data, state, phaseState }: any) => {
 
   /* Box Office Order */
   const showBoxOfficeOrder = (fromPhaseFunction?: boolean) => {
-    // Set "isBoxOfficeOrder"
-    if (!isBoxOfficeOrder) {
-      setIsBoxOfficeorder(true);
-    }
     // "showPhaseOrder"から発火された時はスキップ
     if (!fromPhaseFunction) {
       filterShowsWithCurrentPhase();
@@ -139,30 +130,38 @@ const DataStatus = ({ data, state, phaseState }: any) => {
 
   return (
     <div className={styles.dataStatus}>
-      {shows &&
-        shows.map((show, i) => (
-          <div
-            key={i}
-            className={`keepShowDetail ${styles.showContainer}`}
-            onClick={() => setSelectedShow(show)}
-          >
-            <p key={show.title} className={styles.showContainer__title}>
-              {show.title}
-            </p>
+      {shows ? (
+        <div className={styles.showContainer}>
+          {shows.map((show, i) => (
             <div
-              key={show.cover_url}
-              className={styles.showContainer__imageWrap}
+              key={i}
+              className={`keepShowDetail ${styles.showContainer__showItem}`}
+              onClick={() => setSelectedShow(show)}
             >
-              <Image
-                src={show.cover_url ?? noPicture}
-                alt={show.title}
-                width={256}
-                height={379}
-                layout="intrinsic"
-              />
+              <p
+                key={show.title}
+                className={styles.showContainer__showItem__title}
+              >
+                {show.title}
+              </p>
+              <div
+                key={show.cover_url}
+                className={styles.showContainer__showItem__imageWrap}
+              >
+                <Image
+                  src={show.cover_url ?? noPicture}
+                  alt={show.title}
+                  width={256}
+                  height={379}
+                  layout="intrinsic"
+                />
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+      ) : (
+        <InitialShows baseShowsArr={baseShowsArr} noPicture={noPicture} />
+      )}
 
       {selectedShow && (
         <ShowDetail show={selectedShow} setSelectedShow={setSelectedShow} />

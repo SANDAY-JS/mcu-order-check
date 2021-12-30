@@ -15,6 +15,9 @@ const Home: NextPage = ({ data }: any) => {
   const [isReleaseOrder, setIsReleaseOrder] = useState(false);
   const [isBoxOfficeOrder, setIsBoxOfficeOrder] = useState(false);
 
+  // search
+  const [searchText, setSearchText] = useState("");
+
   return (
     <>
       <Header />
@@ -26,6 +29,8 @@ const Home: NextPage = ({ data }: any) => {
         setIsBoxOfficeOrder={setIsBoxOfficeOrder}
         isReleaseOrder={isReleaseOrder}
         setIsReleaseOrder={setIsReleaseOrder}
+        searchText={searchText}
+        setSearchText={setSearchText}
       />
       <DataStatus
         data={data}
@@ -33,6 +38,7 @@ const Home: NextPage = ({ data }: any) => {
         phaseState={phaseState}
         isReleaseOrder={isReleaseOrder}
         isBoxOfficeOrder={isBoxOfficeOrder}
+        searchText={searchText}
       />
     </>
   );

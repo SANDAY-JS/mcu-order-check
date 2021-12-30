@@ -12,8 +12,11 @@ const DataStatus = ({
   phaseState,
   isReleaseOrder,
   isBoxOfficeOrder,
+  searchText,
 }) => {
-  const firstUpdate = useRef(true);
+  const firstUpdate1 = useRef(true);
+  const firstUpdate2 = useRef(true);
+
   const noPicture = "/images/noimage.png";
   const initialShowData = data.movies.data.concat(data.tvShows.data);
 
@@ -40,6 +43,9 @@ const DataStatus = ({
 
       case SHOWS_STATES.RESET:
         return setShows(null);
+
+      // case SHOWS_STATES.SEARCH:
+      //   return showSearchResult(searchText);
 
       default:
         return null;
@@ -124,18 +130,47 @@ const DataStatus = ({
     return setShows(sortedArr);
   };
 
+  /* Search Result */
+  const showSearchResult = (searchText) => {
+    const result = findString(baseShowsArr, searchText);
+    return setShows(result);
+  };
+  const findString = (showsArr: any[], text: string) => {
+    return showsArr.filter((show) => {
+      // show.titleを単語ごとに配列化
+      const splitArr = show.title.toLowerCase().split(" ");
+      // 配列化されたsplitArrがtextを含むもののみをreturn
+      return splitArr.some((arr: string) => arr.startsWith(text));
+    });
+  };
+  // const sortByName = () => {
+  //   const sortedArr = baseShowsArr.sort((a, b) =>
+  //     a.title.localeCompare(b.title)
+  //   );
+  //   return sortedArr;
+  // };
+
   useEffect(() => {
     invokeShowFunc();
   }, [state]);
 
   useEffect(() => {
     // avoid initial call
-    if (firstUpdate.current) {
-      firstUpdate.current = false;
+    if (firstUpdate1.current) {
+      firstUpdate1.current = false;
       return;
     }
     invokeShowFunc();
   }, [phaseState]);
+
+  useEffect(() => {
+    // avoid initial call
+    if (firstUpdate2.current) {
+      firstUpdate2.current = false;
+      return;
+    }
+    showSearchResult(searchText);
+  }, [searchText]);
 
   return (
     <div className={styles.dataStatus}>

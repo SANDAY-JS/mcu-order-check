@@ -2,6 +2,7 @@ export const SHOWS_STATES = {
   RELEASE_ORDER: "release-order",
   BOX_OFFICE: "box_office",
   PHASE: "phase",
+  SEARCH: "search",
   RESET: "reset",
 };
 
@@ -19,6 +20,9 @@ export const reducerFunc = (showState, action) => {
 
     case SHOWS_STATES.PHASE:
       return (showState = SHOWS_STATES.PHASE);
+
+    case SHOWS_STATES.SEARCH:
+      return (showState = SHOWS_STATES.SEARCH);
 
     case SHOWS_STATES.RESET:
       return (showState = SHOWS_STATES.RESET);

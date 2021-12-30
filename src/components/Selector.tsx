@@ -47,8 +47,7 @@ const Selector = ({
   };
 
   const handleSearch = (e) => {
-    // if (!e.target.value.length) return ;
-    return setSearchText(e.target.value.toLowerCase());
+    return setSearchText(e.target.value.trim().toLowerCase());
   };
 
   const resetShows = () => {

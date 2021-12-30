@@ -136,11 +136,22 @@ const DataStatus = ({
     return setShows(result);
   };
   const findString = (showsArr: any[], text: string) => {
+    // 入力されたテキストに空白が含まれているか
+    const isSeveralWords = text.split(" ").length > 1;
+
     return showsArr.filter((show) => {
-      // show.titleを単語ごとに配列化
-      const splitArr = show.title.toLowerCase().split(" ");
-      // 配列化されたsplitArrがtextを含むもののみをreturn
-      return splitArr.some((arr: string) => arr.startsWith(text));
+      // それぞれの作品タイトルを単語ごとに配列化
+      const titleWordsArr = show.title.toLowerCase().split(" ");
+
+      // 配列化されたtitleWordsArrがtextを含むもののみをreturn
+      if (!isSeveralWords)
+        return titleWordsArr.some((arr: string) => arr.startsWith(text));
+
+      // 複数ある入力テキストの単語と等しいものを選別
+      for (let i = 0; i < titleWordsArr.length - 1; i++) {
+        const titleWords = `${titleWordsArr[i]} ${titleWordsArr[i + 1]}`;
+        if (titleWords.includes(searchText)) return true;
+      }
     });
   };
   // const sortByName = () => {

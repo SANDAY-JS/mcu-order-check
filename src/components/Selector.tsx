@@ -1,7 +1,7 @@
 import styles from "../styles/scss/Selector.module.scss";
 import { SHOWS_STATES } from "../utils/reducer";
 import { FcSearch } from "react-icons/fc";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 
 const Selector = ({
   dispatch,
@@ -11,6 +11,8 @@ const Selector = ({
   setIsBoxOfficeOrder,
   isReleaseOrder,
   setIsReleaseOrder,
+  searchText,
+  setSearchText,
 }) => {
   // checkboxRef in phaseState
   const filterCheckboxRef = useRef([]);
@@ -44,6 +46,10 @@ const Selector = ({
     return dispatch(SHOWS_STATES.BOX_OFFICE);
   };
 
+  const handleSearch = (e) => {
+    return setSearchText(e.target.value.trim().toLowerCase());
+  };
+
   const resetShows = () => {
     // uncheck all checkboxes
     filterCheckboxRef.current.forEach((box) => (box.checked = false));
@@ -58,12 +64,13 @@ const Selector = ({
   return (
     <div className={styles.selector}>
       {/* Search Box */}
-      <div
-        className={styles.searchContainer}
-        // onClick={() => dispatch(SHOWS_STATES.BOX_OFFICE)}
-      >
+      <div className={styles.searchContainer}>
         <FcSearch className={styles.searchIcon} />
-        <input type="text" className={styles.textInput} />
+        <input
+          type="text"
+          className={styles.textInput}
+          onChange={handleSearch}
+        />
       </div>
 
       {/* Release Order */}

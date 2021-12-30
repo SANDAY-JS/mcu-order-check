@@ -12,8 +12,11 @@ const DataStatus = ({
   phaseState,
   isReleaseOrder,
   isBoxOfficeOrder,
+  searchText,
 }) => {
-  const firstUpdate = useRef(true);
+  const firstUpdate1 = useRef(true);
+  const firstUpdate2 = useRef(true);
+
   const noPicture = "/images/noimage.png";
   const initialShowData = data.movies.data.concat(data.tvShows.data);
 
@@ -40,6 +43,9 @@ const DataStatus = ({
 
       case SHOWS_STATES.RESET:
         return setShows(null);
+
+      // case SHOWS_STATES.SEARCH:
+      //   return showSearchResult(searchText);
 
       default:
         return null;
@@ -124,18 +130,58 @@ const DataStatus = ({
     return setShows(sortedArr);
   };
 
+  /* Search Result */
+  const showSearchResult = (searchText) => {
+    const result = findString(baseShowsArr, searchText);
+    return setShows(result);
+  };
+  const findString = (showsArr: any[], text: string) => {
+    // 入力されたテキストに空白が含まれているか
+    const isSeveralWords = text.split(" ").length > 1;
+
+    return showsArr.filter((show) => {
+      // それぞれの作品タイトルを単語ごとに配列化
+      const titleWordsArr = show.title.toLowerCase().split(" ");
+
+      // 配列化されたtitleWordsArrがtextを含むもののみをreturn
+      if (!isSeveralWords)
+        return titleWordsArr.some((arr: string) => arr.startsWith(text));
+
+      // 複数ある入力テキストの単語と等しいものを選別
+      for (let i = 0; i < titleWordsArr.length - 1; i++) {
+        const titleWords = `${titleWordsArr[i]} ${titleWordsArr[i + 1]}`;
+        if (titleWords.includes(searchText)) return true;
+      }
+    });
+  };
+  // const sortByName = () => {
+  //   const sortedArr = baseShowsArr.sort((a, b) =>
+  //     a.title.localeCompare(b.title)
+  //   );
+  //   return sortedArr;
+  // };
+
   useEffect(() => {
     invokeShowFunc();
   }, [state]);
 
   useEffect(() => {
     // avoid initial call
-    if (firstUpdate.current) {
-      firstUpdate.current = false;
+    if (firstUpdate1.current) {
+      firstUpdate1.current = false;
       return;
     }
     invokeShowFunc();
   }, [phaseState]);
+
+  useEffect(() => {
+    // avoid initial call
+    if (firstUpdate2.current) {
+      firstUpdate2.current = false;
+      return;
+    }
+    showSearchResult(searchText);
+  }, [searchText]);
 
   return (
     <div className={styles.dataStatus}>

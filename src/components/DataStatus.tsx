@@ -13,6 +13,7 @@ const DataStatus = ({
   isReleaseOrder,
   isBoxOfficeOrder,
   searchText,
+  excludeWords,
 }) => {
   const firstUpdate1 = useRef(true);
   const firstUpdate2 = useRef(true);
@@ -149,7 +150,15 @@ const DataStatus = ({
 
       // 複数ある入力テキストの単語と等しいものを選別
       for (let i = 0; i < titleWordsArr.length - 1; i++) {
-        const titleWords = `${titleWordsArr[i]} ${titleWordsArr[i + 1]}`;
+        let titleWords = `${titleWordsArr[i]} ${titleWordsArr[i + 1]}`;
+
+        // 入力テキストにexcludeWordsが入っている場合,除外
+        excludeWords.forEach((word) => {
+          if (titleWords.includes(word)) {
+            titleWords = titleWords.replace(word, "");
+          }
+        });
+
         if (titleWords.includes(searchText)) return true;
       }
     });

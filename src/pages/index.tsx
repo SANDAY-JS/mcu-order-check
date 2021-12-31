@@ -17,6 +17,7 @@ const Home: NextPage = ({ data }: any) => {
 
   // search
   const [searchText, setSearchText] = useState("");
+  const excludeWords = [":", "-"];
 
   return (
     <>
@@ -39,6 +40,7 @@ const Home: NextPage = ({ data }: any) => {
         isReleaseOrder={isReleaseOrder}
         isBoxOfficeOrder={isBoxOfficeOrder}
         searchText={searchText}
+        excludeWords={excludeWords}
       />
     </>
   );

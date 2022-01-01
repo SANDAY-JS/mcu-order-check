@@ -13,6 +13,7 @@ const DataStatus = ({
   isReleaseOrder,
   isBoxOfficeOrder,
   searchText,
+  excludeWords,
 }) => {
   const firstUpdate1 = useRef(true);
   const firstUpdate2 = useRef(true);
@@ -135,21 +136,35 @@ const DataStatus = ({
     const result = findString(baseShowsArr, searchText);
     return setShows(result);
   };
-  const findString = (showsArr: any[], text: string) => {
+  const findString = (showsArr: any[], inputText: string) => {
     // 入力されたテキストに空白が含まれているか
-    const isSeveralWords = text.split(" ").length > 1;
+    const isSeveralWords = inputText.split(" ").length > 1;
 
     return showsArr.filter((show) => {
       // それぞれの作品タイトルを単語ごとに配列化
       const titleWordsArr = show.title.toLowerCase().split(" ");
 
-      // 配列化されたtitleWordsArrがtextを含むもののみをreturn
+      // 配列化されたtitleWordsArrが"inputText"を含むもののみをreturn
       if (!isSeveralWords)
-        return titleWordsArr.some((arr: string) => arr.startsWith(text));
+        return titleWordsArr.some((arr: string) => arr.startsWith(inputText));
 
       // 複数ある入力テキストの単語と等しいものを選別
       for (let i = 0; i < titleWordsArr.length - 1; i++) {
-        const titleWords = `${titleWordsArr[i]} ${titleWordsArr[i + 1]}`;
+        let titleWords = "";
+        for (let j = 0; j < titleWordsArr.length; j++) {
+          titleWords += `${titleWordsArr[j]} `;
+        }
+
+        // 入力テキストにexcludeWordsが入っている場合,除外
+        if (excludeWords.some((word) => titleWords.includes(word))) {
+          excludeWords.forEach((word) => {
+            if (titleWords.includes(word)) {
+              titleWords = titleWords.replace(word, "");
+            }
+          });
+        }
+
+        // returns true for "filter"
         if (titleWords.includes(searchText)) return true;
       }
     });

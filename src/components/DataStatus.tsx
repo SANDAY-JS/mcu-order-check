@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import ShowDetail from "./ShowDetail";
-import { SHOWS_STATES } from "../utils/reducer";
+import { initialState, SHOWS_STATES } from "../utils/reducer";
 import InitialShows from "./InitialShows";
 
 import styles from "../styles/scss/DataStatus.module.scss";
@@ -45,99 +45,128 @@ const DataStatus = ({
       case SHOWS_STATES.RESET:
         return setShows(null);
 
-      // case SHOWS_STATES.SEARCH:
-      //   return showSearchResult(searchText);
-
       default:
         return null;
     }
   };
+  /* Sort Methods */
+  class SortBy {
+    releaseDate(arr: any[]) {
+      // sort the entire array
+      const sortedArr = arr.sort((a, b) => {
+        const dateA: any = new Date(a.release_date);
+        const dateB: any = new Date(b.release_date);
 
+        return dateA - dateB;
+      });
+
+      // get the shows which have release dates
+      const withReleaseDates = sortedArr.filter(
+        (show) => show.release_date !== null
+      );
+      // get the shows which don't have release dates
+      const noReleaseDates = sortedArr.filter(
+        (show) => show.release_date === null
+      );
+
+      // combine both arrays (so that the shows which don't have a release date go to the bottom)
+      const completedArr = withReleaseDates.concat(noReleaseDates);
+      return completedArr;
+    }
+
+    boxOffice(arr: any[]) {
+      const sortedArr = arr.sort((a, b) => b.box_office - a.box_office);
+      return sortedArr;
+    }
+
+    titleName() {
+      const sortedArr = baseShowsArr.sort((a, b) =>
+        a.title.localeCompare(b.title)
+      );
+      return sortedArr;
+    }
+  }
+
+  /* フェーズが指定されている場合、"baseShows"をfilterする */
   const filterShowsWithCurrentPhase = () => {
     if (!phaseState.length) {
       setBaseShowsArr(initialShowData);
       return;
     }
-
-    // 表示させる作品
-    const showsArr = baseShowsArr.filter((show) =>
+    // フェーズが指定されている場合
+    const showsArr = initialShowData.filter((show) =>
       phaseState.includes(show.phase)
     );
-
     return setBaseShowsArr(showsArr);
   };
 
-  /* Release Order */
+  const sortClass = new SortBy();
+
+  /* --------------------------------------
+    Release Order
+    ------------------------------------- */
   const showReleaseOrder = (fromPhaseFunction?: boolean) => {
     if (!fromPhaseFunction) {
       filterShowsWithCurrentPhase();
     }
-
-    const sortedArr = sortByReleaseDate(baseShowsArr);
+    const sortedArr = sortClass.releaseDate(baseShowsArr);
     return setShows(sortedArr);
   };
-  // Sort Methods
-  const sortByReleaseDate = (arr: any[]) => {
-    // sort the entire array
-    const sortedArr = arr.sort((a, b) => {
-      const dateA: any = new Date(a.release_date);
-      const dateB: any = new Date(b.release_date);
 
-      return dateA - dateB;
-    });
-
-    // get the shows which have release dates
-    const withReleaseDates = sortedArr.filter(
-      (show) => show.release_date !== null
-    );
-    // get the shows which don't have release dates
-    const noReleaseDates = sortedArr.filter(
-      (show) => show.release_date === null
-    );
-
-    // combine both arrays
-    const completedArr = withReleaseDates.concat(noReleaseDates);
-    return completedArr;
-  };
-
-  /* Box Office Order */
+  /* --------------------------------------
+    Box Office Order
+    ------------------------------------- */
   const showBoxOfficeOrder = (fromPhaseFunction?: boolean) => {
     // "showPhaseOrder"から発火された時はスキップ
     if (!fromPhaseFunction) {
       filterShowsWithCurrentPhase();
     }
     // 並べる
-    const sortedArr = sortByBoxOffice(baseShowsArr);
+    const sortedArr = sortClass.boxOffice(baseShowsArr);
     return setShows(sortedArr);
   };
-  const sortByBoxOffice = (arr: any[]) => {
-    const sortedArr = arr.sort((a, b) => b.box_office - a.box_office);
-    return sortedArr;
-  };
 
-  /* Phase Order */
+  /* --------------------------------------
+    Phase Order (When a check box clicked)
+    ------------------------------------- */
   const showPhaseOrder = (phaseState) => {
     console.log(`phase: %c ${phaseState}`, "color: yellow");
-    if (isReleaseOrder) {
-      showReleaseOrder(true);
-    }
-    if (isBoxOfficeOrder) {
-      showBoxOfficeOrder(true);
+    if (!searchText.length) {
+      const sortedArr = baseShowsArr.filter((show) =>
+        phaseState.includes(show.phase)
+      );
+      detectCurrentState();
+      return setShows(sortedArr);
     }
 
-    const sortedArr = baseShowsArr.filter((show) =>
+    // Search Text がある場合
+    const sortedArr = initialShowData.filter((show) =>
       phaseState.includes(show.phase)
     );
-    return setShows(sortedArr);
+    filterShowsWithCurrentPhase();
+    return showSearchResult(searchText, sortedArr);
+  };
+  const detectCurrentState = () => {
+    if (isReleaseOrder) {
+      return showReleaseOrder(true);
+    }
+    if (isBoxOfficeOrder) {
+      return showBoxOfficeOrder(true);
+    }
   };
 
-  /* Search Result */
-  const showSearchResult = (searchText) => {
-    const result = findString(baseShowsArr, searchText);
+  /* -------------------------
+    Search Result
+    ----------------------- */
+  const showSearchResult = (searchText, sortedArr?: object[]) => {
+    console.log("sortedArr", sortedArr);
+    filterShowsWithCurrentPhase();
+
+    const result = findString(sortedArr ?? baseShowsArr, searchText);
     return setShows(result);
   };
   const findString = (showsArr: any[], inputText: string) => {
-    // 入力されたテキストに空白が含まれているか
+    // 入力テキストが複数の単語か = 入力されたテキストに空白が含まれているか
     const isSeveralWords = inputText.split(" ").length > 1;
 
     return showsArr.filter((show) => {
@@ -169,12 +198,6 @@ const DataStatus = ({
       }
     });
   };
-  // const sortByName = () => {
-  //   const sortedArr = baseShowsArr.sort((a, b) =>
-  //     a.title.localeCompare(b.title)
-  //   );
-  //   return sortedArr;
-  // };
 
   useEffect(() => {
     invokeShowFunc();

@@ -159,7 +159,7 @@ const DataStatus = ({
     Search Result
     ----------------------- */
   const showSearchResult = (searchText, sortedArr?: object[]) => {
-    console.log("sortedArr", sortedArr);
+    if (!searchText) return;
     filterShowsWithCurrentPhase();
 
     const result = findString(sortedArr ?? baseShowsArr, searchText);
@@ -220,6 +220,12 @@ const DataStatus = ({
     }
     showSearchResult(searchText);
   }, [searchText]);
+
+  useEffect(() => {
+    console.log("====================================");
+    console.log("shows>>>", shows);
+    console.log("====================================");
+  }, [shows]);
 
   return (
     <div className={styles.dataStatus}>

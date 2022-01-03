@@ -15,6 +15,7 @@ const Selector = ({
   setSearchText,
 }) => {
   // checkboxRef in phaseState
+  const searchInputRef = useRef(null);
   const filterCheckboxRef = useRef([]);
 
   const addPhaseState = (addedPhase: number) => {
@@ -55,8 +56,10 @@ const Selector = ({
     filterCheckboxRef.current.forEach((box) => (box.checked = false));
     // reset phaseState, isBoxOfficeOrder, isReleaseOrder
     setPhaseState([]);
+    setSearchText("");
     setIsReleaseOrder(false);
     setIsBoxOfficeOrder(false);
+    searchInputRef.current.value = "";
 
     return dispatch(SHOWS_STATES.RESET);
   };
@@ -67,9 +70,10 @@ const Selector = ({
       <div className={styles.searchContainer}>
         <FcSearch className={styles.searchIcon} />
         <input
+          ref={searchInputRef}
           type="text"
-          className={styles.textInput}
           onChange={handleSearch}
+          className={styles.textInput}
         />
       </div>
 

@@ -77,5 +77,13 @@ $BGColor: whitesmoke;
     display: flex;
     flex-wrap: wrap;
     gap: 4px;
+
+    cursor: default;
+    pointer-events: none;
+
+    .phaseSelector__item {
+      cursor: pointer;
+      pointer-events: all;
+    }
   }
 }

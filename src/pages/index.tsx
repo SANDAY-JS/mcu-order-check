@@ -17,7 +17,7 @@ const Home: NextPage = ({ data }: any) => {
 
   // search
   const [searchText, setSearchText] = useState("");
-  const excludeWords = [":", "-"];
+  const excludeWords = [":"];
 
   return (
     <>

@@ -1,4 +1,5 @@
 .header {
+  position: relative;
   width: 100%;
   height: 10vh;
   max-height: 200px;
@@ -7,11 +8,23 @@
 
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 
   background-color: skyblue;
 
+  @media screen and (min-width: 768px) {
+    justify-content: space-between;
+  }
+
   .createdBy {
+    position: absolute;
+    top: 4px;
+    left: 8px;
+
+    @media screen and (min-width: 768px) {
+      position: unset;
+    }
+
     a {
       text-decoration: underline;
     }
@@ -24,9 +37,12 @@
 
   /* === ボタンを表示するエリア ============== */
   .switchArea {
-    position: relative;
+    position: absolute;
+    transform: translateY(-50%);
+    top: 50%;
+    right: 8px;
 
-    width: min(100px, 25%);
+    width: min(80px, 25%);
     height: 50%;
     max-height: 40px;
 
@@ -36,6 +52,13 @@
 
     border-radius: 30px;
     background-color: #fafafa;
+
+    @media screen and (min-width: 768px) {
+      position: relative;
+      transform: unset;
+      top: unset;
+      right: unset;
+    }
 
     &.darkMode {
       color: #fafafa;

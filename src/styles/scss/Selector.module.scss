@@ -1,4 +1,4 @@
-$borderRadius: 12px;
+$borderRadius: 8px;
 $BGColor: whitesmoke;
 
 .selector {
@@ -11,13 +11,12 @@ $BGColor: whitesmoke;
 
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 2rem;
 
   .searchContainer {
     position: relative;
-    width: min(200px, 80%);
+    width: 100%;
     border-radius: $borderRadius;
     overflow: hidden;
 
@@ -49,6 +48,28 @@ $BGColor: whitesmoke;
       font-size: 2rem;
       cursor: pointer;
       z-index: 1;
+    }
+  }
+
+  .selector__itemContainer {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 1rem;
+    width: min(200px, 80%);
+
+    .selector__itemContainer__title {
+      width: 100%;
+      text-align: center;
+      padding-bottom: 2px;
+      border-bottom: 1px solid #222;
+    }
+    .changeOrder {
+      display: flex;
+      justify-content: center;
+
+      width: 100%;
+      text-align: center;
     }
   }
 

@@ -19,7 +19,7 @@ const Header: NextComponentType = () => {
         created by <a href="https://github.com/SANDAY-JS">SANDAY-JS</a>
       </div>
 
-      <h2 className={styles.pageTitle}>MCU Reccomendation For You</h2>
+      <h2 className={styles.pageTitle}>MCU CHECKER</h2>
 
       <div
         className={`keepShowDetail ${styles.switchArea} ${

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import ShowDetail from "./ShowDetail";
-import { initialState, SHOWS_STATES } from "../utils/reducer";
+import { SHOWS_STATES } from "../utils/reducer";
 import InitialShows from "./InitialShows";
 
 import styles from "../styles/scss/DataStatus.module.scss";
@@ -32,6 +32,8 @@ const DataStatus = ({
   /* --------- Methods --------- */
   /* 適当な関数をinvokeする */
   const invokeShowFunc = () => {
+    filterShowsWithCurrentPhase();
+
     switch (state) {
       case SHOWS_STATES.RELEASE_ORDER:
         return showReleaseOrder();
@@ -43,6 +45,7 @@ const DataStatus = ({
         return showPhaseOrder(phaseState);
 
       case SHOWS_STATES.RESET:
+        setBaseShowsArr(initialShowData);
         return setShows(null);
 
       default:
@@ -90,39 +93,31 @@ const DataStatus = ({
   /* フェーズが指定されている場合、"baseShows"をfilterする */
   const filterShowsWithCurrentPhase = () => {
     if (!phaseState.length) {
-      setBaseShowsArr(initialShowData);
-      return;
+      return setBaseShowsArr(initialShowData);
     }
     // フェーズが指定されている場合
+    console.log("Filter baseShowsArr", phaseState);
     const showsArr = initialShowData.filter((show) =>
       phaseState.includes(show.phase)
     );
     return setBaseShowsArr(showsArr);
   };
 
-  const sortClass = new SortBy();
+  const sortMethods = new SortBy();
 
   /* --------------------------------------
     Release Order
     ------------------------------------- */
-  const showReleaseOrder = (fromPhaseFunction?: boolean) => {
-    if (!fromPhaseFunction) {
-      filterShowsWithCurrentPhase();
-    }
-    const sortedArr = sortClass.releaseDate(baseShowsArr);
+  const showReleaseOrder = () => {
+    const sortedArr = sortMethods.releaseDate(baseShowsArr);
     return setShows(sortedArr);
   };
 
   /* --------------------------------------
     Box Office Order
     ------------------------------------- */
-  const showBoxOfficeOrder = (fromPhaseFunction?: boolean) => {
-    // "showPhaseOrder"から発火された時はスキップ
-    if (!fromPhaseFunction) {
-      filterShowsWithCurrentPhase();
-    }
-    // 並べる
-    const sortedArr = sortClass.boxOffice(baseShowsArr);
+  const showBoxOfficeOrder = () => {
+    const sortedArr = sortMethods.boxOffice(baseShowsArr);
     return setShows(sortedArr);
   };
 
@@ -130,12 +125,23 @@ const DataStatus = ({
     Phase Order (When a check box clicked)
     ------------------------------------- */
   const showPhaseOrder = (phaseState) => {
-    console.log(`phase: %c ${phaseState}`, "color: yellow");
+    // 何も設定されていないとき->初期状態に戻す
+    if (
+      !searchText.length &&
+      !isReleaseOrder &&
+      !isBoxOfficeOrder &&
+      !phaseState.length
+    ) {
+      return setShows(null);
+    }
+
     if (!searchText.length) {
+      const hasAnyState = detectCurrentState();
+      if (hasAnyState) return;
+
       const sortedArr = baseShowsArr.filter((show) =>
         phaseState.includes(show.phase)
       );
-      detectCurrentState();
       return setShows(sortedArr);
     }
 
@@ -148,17 +154,20 @@ const DataStatus = ({
   };
   const detectCurrentState = () => {
     if (isReleaseOrder) {
-      return showReleaseOrder(true);
+      showReleaseOrder();
+      return true;
     }
     if (isBoxOfficeOrder) {
-      return showBoxOfficeOrder(true);
+      showBoxOfficeOrder();
+      return true;
     }
+    return false;
   };
 
   /* -------------------------
     Search Result
     ----------------------- */
-  const showSearchResult = (searchText, sortedArr?: object[]) => {
+  const showSearchResult = (searchText: string, sortedArr?: object[]) => {
     if (!searchText) return;
     filterShowsWithCurrentPhase();
 
@@ -199,6 +208,9 @@ const DataStatus = ({
     });
   };
 
+  /*
+   * useEffects
+   */
   useEffect(() => {
     invokeShowFunc();
   }, [state]);
@@ -222,10 +234,8 @@ const DataStatus = ({
   }, [searchText]);
 
   useEffect(() => {
-    console.log("====================================");
-    console.log("shows>>>", shows);
-    console.log("====================================");
-  }, [shows]);
+    console.log("baseShowsArr has changed", baseShowsArr);
+  }, [baseShowsArr]);
 
   return (
     <div className={styles.dataStatus}>

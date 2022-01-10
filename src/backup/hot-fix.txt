@@ -1,3 +1,6 @@
 An Error Occurs When...
 - "SearchText"-> BoxOffice button || Release Date button
 - Phase -> "SearchText" || "Sort"
+
+やること
+ - fitlerWithCurrentPhasesの後で、baseShowsArrの変化が適用されていない

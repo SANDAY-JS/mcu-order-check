@@ -100,6 +100,7 @@ const DataStatus = ({
     return setBaseShowsArr(showsArr);
   };
 
+  /* Declare Classes */
   const sortClass = new SortBy();
 
   /* --------------------------------------
@@ -109,6 +110,7 @@ const DataStatus = ({
     if (!fromPhaseFunction) {
       filterShowsWithCurrentPhase();
     }
+    console.log("phases>>>", phaseState);
     const sortedArr = sortClass.releaseDate(baseShowsArr);
     return setShows(sortedArr);
   };
@@ -122,20 +124,24 @@ const DataStatus = ({
       filterShowsWithCurrentPhase();
     }
     // 並べる
+    console.log("phases>>>", phaseState);
     const sortedArr = sortClass.boxOffice(baseShowsArr);
     return setShows(sortedArr);
   };
 
   /* --------------------------------------
-    Phase Order (When a check box clicked)
+    Phase Order (When any of the check box clicked)
     ------------------------------------- */
   const showPhaseOrder = (phaseState) => {
     console.log(`phase: %c ${phaseState}`, "color: yellow");
+    // Search Text がない場合
     if (!searchText.length) {
+      const hasAnyState = detectCurrentState();
+      if (hasAnyState) return;
+
       const sortedArr = baseShowsArr.filter((show) =>
         phaseState.includes(show.phase)
       );
-      detectCurrentState();
       return setShows(sortedArr);
     }
 
@@ -148,11 +154,14 @@ const DataStatus = ({
   };
   const detectCurrentState = () => {
     if (isReleaseOrder) {
-      return showReleaseOrder(true);
+      showReleaseOrder(true);
+      return true;
     }
     if (isBoxOfficeOrder) {
-      return showBoxOfficeOrder(true);
+      showBoxOfficeOrder(true);
+      return true;
     }
+    return false;
   };
 
   /* -------------------------
@@ -222,9 +231,7 @@ const DataStatus = ({
   }, [searchText]);
 
   useEffect(() => {
-    console.log("====================================");
     console.log("shows>>>", shows);
-    console.log("====================================");
   }, [shows]);
 
   return (

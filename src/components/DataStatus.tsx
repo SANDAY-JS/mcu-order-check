@@ -53,7 +53,8 @@ const DataStatus = ({
     }
   };
   /* Sort Methods */
-  class SortBy {
+
+  const sortMethods = {
     releaseDate(arr: any[]) {
       // sort the entire array
       const sortedArr = arr.sort((a, b) => {
@@ -73,22 +74,21 @@ const DataStatus = ({
       );
 
       // combine both arrays (so that the shows which don't have a release date go to the bottom)
-      const completedArr = withReleaseDates.concat(noReleaseDates);
-      return completedArr;
-    }
+      return withReleaseDates.concat(noReleaseDates);
+    },
 
     boxOffice(arr: any[]) {
       const sortedArr = arr.sort((a, b) => b.box_office - a.box_office);
       return sortedArr;
-    }
+    },
 
     titleName() {
       const sortedArr = baseShowsArr.sort((a, b) =>
         a.title.localeCompare(b.title)
       );
       return sortedArr;
-    }
-  }
+    },
+  };
 
   /* フェーズが指定されている場合、"baseShows"をfilterする */
   const filterShowsWithCurrentPhase = () => {
@@ -96,19 +96,22 @@ const DataStatus = ({
       return setBaseShowsArr(initialShowData);
     }
     // フェーズが指定されている場合
-    console.log("Filter baseShowsArr", phaseState);
     const showsArr = initialShowData.filter((show) =>
       phaseState.includes(show.phase)
     );
+
     return setBaseShowsArr(showsArr);
   };
-
-  const sortMethods = new SortBy();
 
   /* --------------------------------------
     Release Order
     ------------------------------------- */
-  const showReleaseOrder = () => {
+  const showReleaseOrder = (phaseState?: number[]) => {
+    console.count("showReleaseOrder()");
+    if (phaseState?.length) {
+      // from checkbox click
+      filterShowsWithCurrentPhase();
+    }
     const sortedArr = sortMethods.releaseDate(baseShowsArr);
     return setShows(sortedArr);
   };
@@ -116,7 +119,11 @@ const DataStatus = ({
   /* --------------------------------------
     Box Office Order
     ------------------------------------- */
-  const showBoxOfficeOrder = () => {
+  const showBoxOfficeOrder = (phaseState?: number[]) => {
+    if (phaseState?.length) {
+      // from checkbox click
+      filterShowsWithCurrentPhase();
+    }
     const sortedArr = sortMethods.boxOffice(baseShowsArr);
     return setShows(sortedArr);
   };
@@ -135,8 +142,9 @@ const DataStatus = ({
       return setShows(null);
     }
 
+    // Search Text がない場合
     if (!searchText.length) {
-      const hasAnyState = detectCurrentState();
+      const hasAnyState = detectCurrentState(phaseState);
       if (hasAnyState) return;
 
       const sortedArr = baseShowsArr.filter((show) =>
@@ -152,13 +160,14 @@ const DataStatus = ({
     filterShowsWithCurrentPhase();
     return showSearchResult(searchText, sortedArr);
   };
-  const detectCurrentState = () => {
+  const detectCurrentState = (phaseState?: number[]) => {
     if (isReleaseOrder) {
-      showReleaseOrder();
+      // filter baseShows
+      showReleaseOrder(phaseState);
       return true;
     }
     if (isBoxOfficeOrder) {
-      showBoxOfficeOrder();
+      showBoxOfficeOrder(phaseState);
       return true;
     }
     return false;
@@ -234,7 +243,8 @@ const DataStatus = ({
   }, [searchText]);
 
   useEffect(() => {
-    console.log("baseShowsArr has changed", baseShowsArr);
+    console.log("%c baseShowsArr has changed", baseShowsArr, "color: purple;");
+    detectCurrentState();
   }, [baseShowsArr]);
 
   return (

@@ -68,7 +68,7 @@ const Selector = ({
     <div className={styles.selector}>
       {/* Search Box */}
       <div className={styles.selector__itemContainer}>
-        <p className={styles.selector__itemContainer__title}>SEARCH</p>
+        <p className={styles.selector__itemContainer__title}>Search</p>
         <div className={styles.searchContainer}>
           <FcSearch className={styles.searchIcon} />
           <input
@@ -81,7 +81,7 @@ const Selector = ({
       </div>
 
       <div className={styles.selector__itemContainer}>
-        <p className={styles.selector__itemContainer__title}>SORT</p>
+        <p className={styles.selector__itemContainer__title}>Sort</p>
         {/* Release Order */}
         <div
           className={`${styles.changeOrder} ${isReleaseOrder && styles.active}`}
@@ -102,7 +102,7 @@ const Selector = ({
       </div>
 
       <div className={styles.selector__itemContainer}>
-        <p className={styles.selector__itemContainer__title}>PHASE</p>
+        <p className={styles.selector__itemContainer__title}>Phase</p>
         {/* Phase Order */}
         <div
           className={`${styles.changeOrder} ${styles.phaseSelector}`}

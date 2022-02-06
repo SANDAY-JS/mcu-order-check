@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import ShowDetail from "./ShowDetail";
-import { initialState, SHOWS_STATES } from "../utils/reducer";
+import { SHOWS_STATES } from "../utils/reducer";
 import InitialShows from "./InitialShows";
 
 import styles from "../styles/scss/DataStatus.module.scss";
+import ShowItem from "./ShowItem";
 
 const DataStatus = ({
   data,
@@ -32,6 +33,8 @@ const DataStatus = ({
   /* --------- Methods --------- */
   /* 適当な関数をinvokeする */
   const invokeShowFunc = () => {
+    filterShowsWithCurrentPhase();
+
     switch (state) {
       case SHOWS_STATES.RELEASE_ORDER:
         return showReleaseOrder();
@@ -43,6 +46,7 @@ const DataStatus = ({
         return showPhaseOrder(phaseState);
 
       case SHOWS_STATES.RESET:
+        setBaseShowsArr(initialShowData);
         return setShows(null);
 
       default:
@@ -50,7 +54,8 @@ const DataStatus = ({
     }
   };
   /* Sort Methods */
-  class SortBy {
+
+  const sortMethods = {
     releaseDate(arr: any[]) {
       // sort the entire array
       const sortedArr = arr.sort((a, b) => {
@@ -70,59 +75,57 @@ const DataStatus = ({
       );
 
       // combine both arrays (so that the shows which don't have a release date go to the bottom)
-      const completedArr = withReleaseDates.concat(noReleaseDates);
-      return completedArr;
-    }
+      return withReleaseDates.concat(noReleaseDates);
+    },
 
     boxOffice(arr: any[]) {
       const sortedArr = arr.sort((a, b) => b.box_office - a.box_office);
       return sortedArr;
-    }
+    },
 
     titleName() {
       const sortedArr = baseShowsArr.sort((a, b) =>
         a.title.localeCompare(b.title)
       );
       return sortedArr;
-    }
-  }
+    },
+  };
 
   /* フェーズが指定されている場合、"baseShows"をfilterする */
   const filterShowsWithCurrentPhase = () => {
     if (!phaseState.length) {
-      setBaseShowsArr(initialShowData);
-      return;
+      return setBaseShowsArr(initialShowData);
     }
     // フェーズが指定されている場合
     const showsArr = initialShowData.filter((show) =>
       phaseState.includes(show.phase)
     );
+
     return setBaseShowsArr(showsArr);
   };
-
-  const sortClass = new SortBy();
 
   /* --------------------------------------
     Release Order
     ------------------------------------- */
-  const showReleaseOrder = (fromPhaseFunction?: boolean) => {
-    if (!fromPhaseFunction) {
+  const showReleaseOrder = (phaseState?: number[]) => {
+    console.count("showReleaseOrder()");
+    if (phaseState?.length) {
+      // from checkbox click
       filterShowsWithCurrentPhase();
     }
-    const sortedArr = sortClass.releaseDate(baseShowsArr);
+    const sortedArr = sortMethods.releaseDate(baseShowsArr);
     return setShows(sortedArr);
   };
 
   /* --------------------------------------
     Box Office Order
     ------------------------------------- */
-  const showBoxOfficeOrder = (fromPhaseFunction?: boolean) => {
-    // "showPhaseOrder"から発火された時はスキップ
-    if (!fromPhaseFunction) {
+  const showBoxOfficeOrder = (phaseState?: number[]) => {
+    if (phaseState?.length) {
+      // from checkbox click
       filterShowsWithCurrentPhase();
     }
-    // 並べる
-    const sortedArr = sortClass.boxOffice(baseShowsArr);
+    const sortedArr = sortMethods.boxOffice(baseShowsArr);
     return setShows(sortedArr);
   };
 
@@ -130,12 +133,26 @@ const DataStatus = ({
     Phase Order (When a check box clicked)
     ------------------------------------- */
   const showPhaseOrder = (phaseState) => {
-    console.log(`phase: %c ${phaseState}`, "color: yellow");
+    // 何も設定されていないとき->初期状態に戻す
+    if (
+      !searchText.length &&
+      !isReleaseOrder &&
+      !isBoxOfficeOrder &&
+      !phaseState.length
+    ) {
+      return setShows(null);
+    }
+
+    // Search Text がない場合
     if (!searchText.length) {
-      const sortedArr = baseShowsArr.filter((show) =>
+      const hasAnyState = detectCurrentState(phaseState);
+      if (hasAnyState === undefined) return;
+
+      // Sort Option が無い場合
+      const sortedArr = initialShowData.filter((show) =>
         phaseState.includes(show.phase)
       );
-      detectCurrentState();
+
       return setShows(sortedArr);
     }
 
@@ -146,19 +163,21 @@ const DataStatus = ({
     filterShowsWithCurrentPhase();
     return showSearchResult(searchText, sortedArr);
   };
-  const detectCurrentState = () => {
+
+  const detectCurrentState = (phaseState?: number[]) => {
     if (isReleaseOrder) {
-      return showReleaseOrder(true);
+      return showReleaseOrder(phaseState);
     }
     if (isBoxOfficeOrder) {
-      return showBoxOfficeOrder(true);
+      return showBoxOfficeOrder(phaseState);
     }
+    return false;
   };
 
   /* -------------------------
     Search Result
     ----------------------- */
-  const showSearchResult = (searchText, sortedArr?: object[]) => {
+  const showSearchResult = (searchText: string, sortedArr?: object[]) => {
     if (!searchText) return;
     filterShowsWithCurrentPhase();
 
@@ -199,6 +218,9 @@ const DataStatus = ({
     });
   };
 
+  /*
+   * useEffects
+   */
   useEffect(() => {
     invokeShowFunc();
   }, [state]);
@@ -222,9 +244,12 @@ const DataStatus = ({
   }, [searchText]);
 
   useEffect(() => {
-    console.log("====================================");
-    console.log("shows>>>", shows);
-    console.log("====================================");
+    console.log("%c baseShowsArr has changed", "color: skyblue;", baseShowsArr);
+    detectCurrentState();
+  }, [baseShowsArr]);
+
+  useEffect(() => {
+    console.log("%c shows has changed", "color: red;", shows);
   }, [shows]);
 
   return (
@@ -232,32 +257,7 @@ const DataStatus = ({
       {shows ? (
         <div className={styles.showContainer}>
           {shows.map((show, i) => (
-            <div
-              key={i}
-              className={`keepShowDetail ${styles.showContainer__showItem}`}
-              onClick={() => setSelectedShow(show)}
-            >
-              <p
-                key={show.title}
-                className={styles.showContainer__showItem__title}
-              >
-                {show.title}
-              </p>
-              <div
-                key={show.cover_url}
-                className={styles.showContainer__showItem__imageWrap}
-              >
-                <Image
-                  src={show.cover_url ?? noPicture}
-                  alt={show.title}
-                  width={256}
-                  height={379}
-                  layout="intrinsic"
-                  placeholder="blur"
-                  blurDataURL={show.cover_url ?? noPicture}
-                />
-              </div>
-            </div>
+            <ShowItem show={show} setSelectedShow={setSelectedShow} key={i} />
           ))}
         </div>
       ) : (

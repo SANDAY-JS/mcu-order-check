@@ -1,3 +1,0 @@
-An Error Occurs When...
-- "SearchText"-> BoxOffice button || Release Date button
-- Phase -> "SearchText" || "Sort"

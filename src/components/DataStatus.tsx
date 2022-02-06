@@ -145,7 +145,7 @@ const DataStatus = ({
     // Search Text がない場合
     if (!searchText.length) {
       const hasAnyState = detectCurrentState(phaseState);
-      if (hasAnyState) return;
+      if (hasAnyState !== false) return;
 
       const sortedArr = baseShowsArr.filter((show) =>
         phaseState.includes(show.phase)
@@ -160,15 +160,13 @@ const DataStatus = ({
     filterShowsWithCurrentPhase();
     return showSearchResult(searchText, sortedArr);
   };
+
   const detectCurrentState = (phaseState?: number[]) => {
     if (isReleaseOrder) {
-      // filter baseShows
-      showReleaseOrder(phaseState);
-      return true;
+      return showReleaseOrder(phaseState);
     }
     if (isBoxOfficeOrder) {
-      showBoxOfficeOrder(phaseState);
-      return true;
+      return showBoxOfficeOrder(phaseState);
     }
     return false;
   };
@@ -243,7 +241,7 @@ const DataStatus = ({
   }, [searchText]);
 
   useEffect(() => {
-    console.log("%c baseShowsArr has changed", baseShowsArr, "color: purple;");
+    console.log("%c baseShowsArr has changed", "color: skyblue;", baseShowsArr);
     detectCurrentState();
   }, [baseShowsArr]);
 

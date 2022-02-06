@@ -1,3 +1,0 @@
-やること
- - fitlerWithCurrentPhasesの後で、baseShowsArrの変化の適用が一歩遅い
- 

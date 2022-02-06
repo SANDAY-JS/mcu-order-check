@@ -148,11 +148,11 @@ const DataStatus = ({
       const hasAnyState = detectCurrentState(phaseState);
       if (hasAnyState === undefined) return;
 
-      console.log("doesnt have any state");
-
-      const sortedArr = baseShowsArr.filter((show) =>
+      // Sort Option が無い場合
+      const sortedArr = initialShowData.filter((show) =>
         phaseState.includes(show.phase)
       );
+
       return setShows(sortedArr);
     }
 
@@ -247,6 +247,7 @@ const DataStatus = ({
     console.log("%c baseShowsArr has changed", "color: skyblue;", baseShowsArr);
     detectCurrentState();
   }, [baseShowsArr]);
+
   useEffect(() => {
     console.log("%c shows has changed", "color: red;", shows);
   }, [shows]);

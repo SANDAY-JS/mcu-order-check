@@ -5,7 +5,6 @@ import { SHOWS_STATES } from "../utils/reducer";
 import InitialShows from "./InitialShows";
 
 import styles from "../styles/scss/DataStatus.module.scss";
-import ShowItem from "./ShowItem";
 
 const DataStatus = ({
   data,
@@ -101,6 +100,8 @@ const DataStatus = ({
       phaseState.includes(show.phase)
     );
 
+    console.log(`%c data>>> ${showsArr}`, "color: blue");
+
     return setBaseShowsArr(showsArr);
   };
 
@@ -108,11 +109,10 @@ const DataStatus = ({
     Release Order
     ------------------------------------- */
   const showReleaseOrder = (phaseState?: number[]) => {
-    console.count("showReleaseOrder()");
     if (phaseState?.length) {
-      // from checkbox click
       filterShowsWithCurrentPhase();
     }
+    // console.log("%c ganna use baseShowsArr", "color: green");
     const sortedArr = sortMethods.releaseDate(baseShowsArr);
     return setShows(sortedArr);
   };
@@ -121,10 +121,6 @@ const DataStatus = ({
     Box Office Order
     ------------------------------------- */
   const showBoxOfficeOrder = (phaseState?: number[]) => {
-    if (phaseState?.length) {
-      // from checkbox click
-      filterShowsWithCurrentPhase();
-    }
     const sortedArr = sortMethods.boxOffice(baseShowsArr);
     return setShows(sortedArr);
   };
@@ -134,6 +130,8 @@ const DataStatus = ({
     ------------------------------------- */
   const showPhaseOrder = (phaseState) => {
     // 何も設定されていないとき->初期状態に戻す
+    console.log("should be 1st");
+
     if (
       !searchText.length &&
       !isReleaseOrder &&
@@ -146,9 +144,7 @@ const DataStatus = ({
     // Search Text がない場合
     if (!searchText.length) {
       const hasAnyState = detectCurrentState(phaseState);
-      if (hasAnyState === undefined) return;
-
-      console.log("doesnt have any state");
+      if (hasAnyState) return;
 
       const sortedArr = baseShowsArr.filter((show) =>
         phaseState.includes(show.phase)
@@ -163,13 +159,15 @@ const DataStatus = ({
     filterShowsWithCurrentPhase();
     return showSearchResult(searchText, sortedArr);
   };
-
   const detectCurrentState = (phaseState?: number[]) => {
     if (isReleaseOrder) {
-      return showReleaseOrder(phaseState);
+      // filter baseShows
+      showReleaseOrder(phaseState);
+      return true;
     }
     if (isBoxOfficeOrder) {
-      return showBoxOfficeOrder(phaseState);
+      showBoxOfficeOrder(phaseState);
+      return true;
     }
     return false;
   };
@@ -244,19 +242,41 @@ const DataStatus = ({
   }, [searchText]);
 
   useEffect(() => {
-    console.log("%c baseShowsArr has changed", "color: skyblue;", baseShowsArr);
-    detectCurrentState();
+    // you have to make functions in here.
+    console.log("baseShowsArr has changed", baseShowsArr);
   }, [baseShowsArr]);
-  useEffect(() => {
-    console.log("%c shows has changed", "color: red;", shows);
-  }, [shows]);
 
   return (
     <div className={styles.dataStatus}>
       {shows ? (
         <div className={styles.showContainer}>
           {shows.map((show, i) => (
-            <ShowItem show={show} setSelectedShow={setSelectedShow} key={i} />
+            <div
+              key={i}
+              className={`keepShowDetail ${styles.showContainer__showItem}`}
+              onClick={() => setSelectedShow(show)}
+            >
+              <p
+                key={show.title}
+                className={styles.showContainer__showItem__title}
+              >
+                {show.title}
+              </p>
+              <div
+                key={show.cover_url}
+                className={styles.showContainer__showItem__imageWrap}
+              >
+                <Image
+                  src={show.cover_url ?? noPicture}
+                  alt={show.title}
+                  width={256}
+                  height={379}
+                  layout="intrinsic"
+                  placeholder="blur"
+                  blurDataURL={show.cover_url ?? noPicture}
+                />
+              </div>
+            </div>
           ))}
         </div>
       ) : (

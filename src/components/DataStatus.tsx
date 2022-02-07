@@ -54,8 +54,8 @@ const DataStatus = ({
         return null;
     }
   };
-  /* Sort Methods */
 
+  /* Sort Methods */
   const sortMethods = {
     releaseDate(arr: any[]) {
       // sort the entire array
@@ -92,19 +92,6 @@ const DataStatus = ({
     },
   };
 
-  /* フェーズが指定されている場合、"baseShows"をfilterする */
-  const filterBaseShowsWithCurrentPhase = () => {
-    if (!phaseState.length) {
-      return setBaseShowsArr(initialShowData);
-    }
-    // フェーズが指定されている場合
-    const showsArr = initialShowData.filter((show) =>
-      phaseState.includes(show.phase)
-    );
-
-    return setBaseShowsArr(showsArr);
-  };
-
   /* --------------------------------------
     Release Order
     ------------------------------------- */
@@ -128,21 +115,8 @@ const DataStatus = ({
     return setShows(sortedArr);
   };
 
-  // detect states
-  const detectSearchPhaseStates = (sortedArr: any[]) => {
-    if (searchText.length) {
-      showSearchResult(searchText, sortedArr);
-      return true;
-    }
-    if (phaseState?.length) {
-      filterBaseShowsWithCurrentPhase();
-      return true;
-    }
-    return false;
-  };
-
   /* --------------------------------------
-    Phase Order (When a check box clicked)
+    Phase Manipulation (When a check box clicked)
     ------------------------------------- */
   const showPhaseOrder = (phaseState) => {
     // 何も設定されていないとき->初期状態に戻す
@@ -155,6 +129,7 @@ const DataStatus = ({
       return setShows(null);
     }
 
+    // Debug this (to prevent from infinite loop)
     // Search Text がない場合
     if (!searchText.length) {
       const hasAnyState = detectCurrentSortState(phaseState);
@@ -168,23 +143,13 @@ const DataStatus = ({
       return setShows(sortedArr);
     }
 
-    console.log("there is search text");
+    console.log("%c there is search text", "color: yellow;");
     // Search Text がある場合
     const sortedArr = initialShowData.filter((show) =>
       phaseState.includes(show.phase)
     );
     filterBaseShowsWithCurrentPhase();
     return showSearchResult(searchText, sortedArr);
-  };
-
-  const detectCurrentSortState = (phaseState?: number[]) => {
-    if (isReleaseOrder) {
-      return showReleaseOrder(phaseState);
-    }
-    if (isBoxOfficeOrder) {
-      return showBoxOfficeOrder(phaseState);
-    }
-    return false;
   };
 
   /* -------------------------
@@ -231,9 +196,60 @@ const DataStatus = ({
     });
   };
 
-  /*
+  /* -------------------------------
+    Filter Method (フェーズが指定されている場合、"baseShows"をfilterする)
+    ----------------------------- */
+  const filterBaseShowsWithCurrentPhase = () => {
+    if (!phaseState.length) {
+      return setBaseShowsArr(initialShowData);
+    }
+    // フェーズが指定されている場合
+    const showsArr = initialShowData.filter((show) =>
+      phaseState.includes(show.phase)
+    );
+
+    return setBaseShowsArr(showsArr);
+  };
+
+  /* -------------------------
+      Detect Methods
+    ------------------------- */
+  const detectSearchPhaseStates = (sortedArr: any[]) => {
+    if (searchText.length) {
+      showSearchResult(searchText, sortedArr);
+      return true;
+    }
+    if (phaseState?.length) {
+      filterBaseShowsWithCurrentPhase();
+      return true;
+    }
+    return false;
+  };
+  const detectCurrentSortState = (phaseState?: number[]) => {
+    if (isReleaseOrder) {
+      return showReleaseOrder(phaseState);
+    }
+    if (isBoxOfficeOrder) {
+      return showBoxOfficeOrder(phaseState);
+    }
+    return false;
+  };
+
+  /* -------------------
+   useDeepCompareEffects
+  --------------------- */
+  useDeepCompareEffect(() => {
+    console.log("%c baseShowsArr has changed", "color: skyblue;", baseShowsArr);
+    detectCurrentSortState();
+  }, [baseShowsArr ?? {}]);
+
+  useDeepCompareEffect(() => {
+    console.log("%c shows has changed", "color: rgb(200, 76, 76);", shows);
+  }, [shows ?? {}]);
+
+  /* -------------------
    * useEffects
-   */
+   ------------------- */
   useEffect(() => {
     invokeShowFunc();
   }, [state]);
@@ -255,15 +271,6 @@ const DataStatus = ({
     }
     showSearchResult(searchText);
   }, [searchText]);
-
-  useDeepCompareEffect(() => {
-    console.log("%c baseShowsArr has changed", "color: skyblue;", baseShowsArr);
-    detectCurrentSortState();
-  }, [baseShowsArr ?? {}]);
-
-  useDeepCompareEffect(() => {
-    console.log("%c shows has changed", "color: rgb(200, 76, 76);", shows);
-  }, [shows ?? {}]);
 
   return (
     <div className={styles.dataStatus}>

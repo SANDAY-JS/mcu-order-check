@@ -109,10 +109,6 @@ const DataStatus = ({
     Release Order
     ------------------------------------- */
   const showReleaseOrder = (phaseState?: number[]) => {
-    /* 
-     hasNewValue === true -> new shows "will" set
-     hasNewValue === false -> just go to the bottom
-    */
     const sortedArr = sortMethods.releaseDate(baseShowsArr);
 
     const hasAnyState = detectSearchPhaseStates(sortedArr);
@@ -120,6 +116,19 @@ const DataStatus = ({
 
     return setShows(sortedArr);
   };
+  /* --------------------------------------
+    Box Office Order
+    ------------------------------------- */
+  const showBoxOfficeOrder = (phaseState?: number[]) => {
+    const sortedArr = sortMethods.boxOffice(baseShowsArr);
+
+    const hasAnyState = detectSearchPhaseStates(sortedArr);
+    if (hasAnyState) return;
+
+    return setShows(sortedArr);
+  };
+
+  // detect states
   const detectSearchPhaseStates = (sortedArr: any[]) => {
     if (searchText.length) {
       showSearchResult(searchText, sortedArr);
@@ -130,18 +139,6 @@ const DataStatus = ({
       return true;
     }
     return false;
-  };
-
-  /* --------------------------------------
-    Box Office Order
-    ------------------------------------- */
-  const showBoxOfficeOrder = (phaseState?: number[]) => {
-    if (phaseState?.length) {
-      // from checkbox click
-      filterBaseShowsWithCurrentPhase();
-    }
-    const sortedArr = sortMethods.boxOffice(baseShowsArr);
-    return setShows(sortedArr);
   };
 
   /* --------------------------------------
@@ -171,6 +168,7 @@ const DataStatus = ({
       return setShows(sortedArr);
     }
 
+    console.log("there is search text");
     // Search Text がある場合
     const sortedArr = initialShowData.filter((show) =>
       phaseState.includes(show.phase)

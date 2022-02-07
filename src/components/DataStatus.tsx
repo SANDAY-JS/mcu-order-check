@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import ShowDetail from "./ShowDetail";
 import { SHOWS_STATES } from "../utils/reducer";
@@ -6,6 +6,7 @@ import InitialShows from "./InitialShows";
 
 import styles from "../styles/scss/DataStatus.module.scss";
 import ShowItem from "./ShowItem";
+import useDeepCompareEffect from "use-deep-compare-effect";
 
 const DataStatus = ({
   data,
@@ -33,7 +34,7 @@ const DataStatus = ({
   /* --------- Methods --------- */
   /* 適当な関数をinvokeする */
   const invokeShowFunc = () => {
-    filterShowsWithCurrentPhase();
+    filterBaseShowsWithCurrentPhase();
 
     switch (state) {
       case SHOWS_STATES.RELEASE_ORDER:
@@ -92,7 +93,7 @@ const DataStatus = ({
   };
 
   /* フェーズが指定されている場合、"baseShows"をfilterする */
-  const filterShowsWithCurrentPhase = () => {
+  const filterBaseShowsWithCurrentPhase = () => {
     if (!phaseState.length) {
       return setBaseShowsArr(initialShowData);
     }
@@ -108,13 +109,27 @@ const DataStatus = ({
     Release Order
     ------------------------------------- */
   const showReleaseOrder = (phaseState?: number[]) => {
-    console.count("showReleaseOrder()");
-    if (phaseState?.length) {
-      // from checkbox click
-      filterShowsWithCurrentPhase();
-    }
+    /* 
+     hasNewValue === true -> new shows "will" set
+     hasNewValue === false -> just go to the bottom
+    */
     const sortedArr = sortMethods.releaseDate(baseShowsArr);
+
+    const hasAnyState = detectSearchPhaseStates(sortedArr);
+    if (hasAnyState) return;
+
     return setShows(sortedArr);
+  };
+  const detectSearchPhaseStates = (sortedArr: any[]) => {
+    if (searchText.length) {
+      showSearchResult(searchText, sortedArr);
+      return true;
+    }
+    if (phaseState?.length) {
+      filterBaseShowsWithCurrentPhase();
+      return true;
+    }
+    return false;
   };
 
   /* --------------------------------------
@@ -123,7 +138,7 @@ const DataStatus = ({
   const showBoxOfficeOrder = (phaseState?: number[]) => {
     if (phaseState?.length) {
       // from checkbox click
-      filterShowsWithCurrentPhase();
+      filterBaseShowsWithCurrentPhase();
     }
     const sortedArr = sortMethods.boxOffice(baseShowsArr);
     return setShows(sortedArr);
@@ -145,7 +160,7 @@ const DataStatus = ({
 
     // Search Text がない場合
     if (!searchText.length) {
-      const hasAnyState = detectCurrentState(phaseState);
+      const hasAnyState = detectCurrentSortState(phaseState);
       if (hasAnyState === undefined) return;
 
       // Sort Option が無い場合
@@ -160,11 +175,11 @@ const DataStatus = ({
     const sortedArr = initialShowData.filter((show) =>
       phaseState.includes(show.phase)
     );
-    filterShowsWithCurrentPhase();
+    filterBaseShowsWithCurrentPhase();
     return showSearchResult(searchText, sortedArr);
   };
 
-  const detectCurrentState = (phaseState?: number[]) => {
+  const detectCurrentSortState = (phaseState?: number[]) => {
     if (isReleaseOrder) {
       return showReleaseOrder(phaseState);
     }
@@ -179,7 +194,7 @@ const DataStatus = ({
     ----------------------- */
   const showSearchResult = (searchText: string, sortedArr?: object[]) => {
     if (!searchText) return;
-    filterShowsWithCurrentPhase();
+    filterBaseShowsWithCurrentPhase();
 
     const result = findString(sortedArr ?? baseShowsArr, searchText);
     return setShows(result);
@@ -243,14 +258,14 @@ const DataStatus = ({
     showSearchResult(searchText);
   }, [searchText]);
 
-  useEffect(() => {
+  useDeepCompareEffect(() => {
     console.log("%c baseShowsArr has changed", "color: skyblue;", baseShowsArr);
-    detectCurrentState();
-  }, [baseShowsArr]);
+    detectCurrentSortState();
+  }, [baseShowsArr ?? {}]);
 
-  useEffect(() => {
-    console.log("%c shows has changed", "color: red;", shows);
-  }, [shows]);
+  useDeepCompareEffect(() => {
+    console.log("%c shows has changed", "color: rgb(200, 76, 76);", shows);
+  }, [shows ?? {}]);
 
   return (
     <div className={styles.dataStatus}>

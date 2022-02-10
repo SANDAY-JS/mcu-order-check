@@ -100,8 +100,16 @@ const DataStatus = ({
   /* --------------------------------------
     Release Order
     ------------------------------------- */
-  const showReleaseOrder = (phaseState?: number[]) => {
+  const showReleaseOrder = (fromDetectFunc?: boolean) => {
     const sortedArr = sortMethods.releaseDate(baseShowsArr);
+
+    if (fromDetectFunc) {
+      if (searchText.length) {
+        const searchResult = showSearchResult(true, sortedArr);
+        return setShows(searchResult);
+      }
+      return setShows(sortedArr);
+    }
 
     const hasAnyState = detectSearchPhaseStates(sortedArr, true);
     if (hasAnyState) return;
@@ -111,9 +119,16 @@ const DataStatus = ({
   /* --------------------------------------
     Box Office Order
     ------------------------------------- */
-  const showBoxOfficeOrder = (phaseState?: number[]) => {
-    console.count();
+  const showBoxOfficeOrder = (fromDetectFunc?: boolean) => {
     const sortedArr = sortMethods.boxOffice(baseShowsArr);
+
+    if (fromDetectFunc) {
+      if (searchText.length) {
+        const searchResult = showSearchResult(true, sortedArr);
+        return setShows(searchResult);
+      }
+      return setShows(sortedArr);
+    }
 
     const hasAnyState = detectSearchPhaseStates(sortedArr, true);
     if (hasAnyState) return;
@@ -149,23 +164,28 @@ const DataStatus = ({
       return setShows(sortedArr);
     }
 
-    console.log("%c there is search text", "color: yellow;");
     // Search Text がある場合
     const sortedArr = initialShowData.filter((show) =>
       phaseState.includes(show.phase)
     );
-    filterBaseShowsWithCurrentPhase();
     return showSearchResult(searchText, sortedArr);
   };
 
   /* -------------------------
     Search Result
     ----------------------- */
-  const showSearchResult = (searchText: string, sortedArr?: object[]) => {
-    if (!searchText) return;
+  const showSearchResult = (
+    textOrTrue: string | true,
+    sortedArr?: object[]
+  ) => {
+    if (textOrTrue === true) {
+      const result = findString(sortedArr, searchText);
+      return result;
+    }
+
     filterBaseShowsWithCurrentPhase();
 
-    const result = findString(sortedArr ?? baseShowsArr, searchText);
+    const result = findString(sortedArr ?? baseShowsArr, textOrTrue);
     return setShows(result);
   };
   const findString = (showsArr: any[], inputText: string) => {
@@ -249,11 +269,11 @@ const DataStatus = ({
   };
   const detectSortState = (phaseState?: number[]) => {
     if (isReleaseOrder) {
-      showReleaseOrder(phaseState);
+      showReleaseOrder(true);
       return true;
     }
     if (isBoxOfficeOrder) {
-      showBoxOfficeOrder(phaseState);
+      showBoxOfficeOrder(true);
       return true;
     }
     return false;

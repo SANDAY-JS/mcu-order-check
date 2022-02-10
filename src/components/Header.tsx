@@ -17,7 +17,7 @@ const Header: NextComponentType = () => {
     <div className={styles.header}>
       <div className={styles.createdBy}>
         created by{" "}
-        <a href="https://github.com/SANDAY-JS" target="_blank">
+        <a href="https://github.com/SANDAY-JS" target="_blank" rel="noopener noreferrer">
           SANDAY-JS
         </a>
       </div>

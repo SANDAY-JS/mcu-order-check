@@ -5,7 +5,6 @@ import InitialShows from "./InitialShows";
 
 import styles from "../styles/scss/DataStatus.module.scss";
 import ShowItem from "./ShowItem";
-import useDeepCompareEffect from "use-deep-compare-effect";
 
 const DataStatus = ({
   data,
@@ -21,20 +20,22 @@ const DataStatus = ({
 
   const noPicture = "/images/noimage.png";
   const initialShowData = data.movies.data.concat(data.tvShows.data);
-  const FIRST_CURRENT_STATE = {
-    releaseDate: "release-date",
-    boxOffice: "box-office",
-    search: "search",
-    phase: "phase",
-  };
 
   /* ----------- States ----------- */
   // 表示されている作品
-  const [shows, setShows] = useState(null);
+  const [displayShows, setDisplayShows] = useState(null);
   // クリックされた作品
   const [selectedShow, setSelectedShow] = useState(null);
   // Showsの基本となるArray
   const [baseShowsArr, setBaseShowsArr] = useState(initialShowData);
+
+  const log = () => {
+    console.log("isReleaseOrder", isReleaseOrder);
+    console.log("isBoxOfficeOrder", isBoxOfficeOrder);
+    console.log("phaseState", phaseState);
+    console.log("baseShows", baseShowsArr);
+    console.log("shows", displayShows);
+  };
 
   /* --------- Methods --------- */
   /* 適当な関数をinvokeする */
@@ -53,7 +54,7 @@ const DataStatus = ({
 
       case SHOWS_STATES.RESET:
         setBaseShowsArr(initialShowData);
-        return setShows(null);
+        return setDisplayShows(null);
 
       default:
         return null;
@@ -106,15 +107,15 @@ const DataStatus = ({
     if (fromDetectFunc) {
       if (searchText.length) {
         const searchResult = showSearchResult(true, sortedArr);
-        return setShows(searchResult);
+        return setDisplayShows(searchResult);
       }
-      return setShows(sortedArr);
+      return setDisplayShows(sortedArr);
     }
 
     const hasAnyState = detectSearchPhaseStates(sortedArr, true);
     if (hasAnyState) return;
 
-    return setShows(sortedArr);
+    return setDisplayShows(sortedArr);
   };
   /* --------------------------------------
     Box Office Order
@@ -125,15 +126,15 @@ const DataStatus = ({
     if (fromDetectFunc) {
       if (searchText.length) {
         const searchResult = showSearchResult(true, sortedArr);
-        return setShows(searchResult);
+        return setDisplayShows(searchResult);
       }
-      return setShows(sortedArr);
+      return setDisplayShows(sortedArr);
     }
 
     const hasAnyState = detectSearchPhaseStates(sortedArr, true);
     if (hasAnyState) return;
 
-    return setShows(sortedArr);
+    return setDisplayShows(sortedArr);
   };
 
   /* --------------------------------------
@@ -147,7 +148,7 @@ const DataStatus = ({
       !isBoxOfficeOrder &&
       !phaseState.length
     ) {
-      return setShows(null);
+      return setDisplayShows(null);
     }
 
     // Search Text がない場合
@@ -160,8 +161,7 @@ const DataStatus = ({
       const sortedArr = initialShowData.filter((show) =>
         phaseState.includes(show.phase)
       );
-
-      return setShows(sortedArr);
+      return setDisplayShows(sortedArr);
     }
 
     // Search Text がある場合
@@ -178,15 +178,16 @@ const DataStatus = ({
     textOrTrue: string | true,
     sortedArr?: object[]
   ) => {
+    if (!searchText.length) return;
+
     if (textOrTrue === true) {
-      const result = findString(sortedArr, searchText);
-      return result;
+      return findString(sortedArr, searchText);
     }
 
     filterBaseShowsWithCurrentPhase();
 
     const result = findString(sortedArr ?? baseShowsArr, textOrTrue);
-    return setShows(result);
+    return setDisplayShows(result);
   };
   const findString = (showsArr: any[], inputText: string) => {
     // 入力テキストが複数の単語か = 入力されたテキストに空白が含まれているか
@@ -235,7 +236,7 @@ const DataStatus = ({
     );
 
     if (fromDetectFunc) {
-      setShows(showsArr);
+      setDisplayShows(showsArr);
     }
     return setBaseShowsArr(showsArr);
   };
@@ -243,13 +244,6 @@ const DataStatus = ({
   /* -------------------------
       Detect Methods
     ------------------------- */
-  // const detectCurrentState = (sortedArr?: any[]) =>{
-  //   if(searchText.length){
-  //     const hasSortState = detectSortState();
-  //     return;
-  //   }
-  //   detectSortState();
-  // }
   const detectSearchPhaseStates = (
     sortedArr: any[],
     fromSortFunc?: boolean
@@ -280,18 +274,6 @@ const DataStatus = ({
   };
 
   /* -------------------
-   useDeepCompareEffects
-  --------------------- */
-  useDeepCompareEffect(() => {
-    console.log("%c baseShowsArr has changed", "color: skyblue;", baseShowsArr);
-    detectSortState();
-  }, [baseShowsArr ?? {}]);
-
-  useDeepCompareEffect(() => {
-    console.log("%c shows has changed", "color: rgb(200, 76, 76);", shows);
-  }, [shows ?? {}]);
-
-  /* -------------------
    * useEffects
    ------------------- */
   useEffect(() => {
@@ -316,11 +298,24 @@ const DataStatus = ({
     showSearchResult(searchText);
   }, [searchText]);
 
+  useEffect(() => {
+    console.log("%c baseShowsArr has changed", "color: skyblue;", baseShowsArr);
+    detectSortState();
+  }, [baseShowsArr]);
+
+  useEffect(() => {
+    console.log(
+      "%c shows has changed",
+      "color: rgb(200, 76, 76);",
+      displayShows
+    );
+  }, [displayShows]);
+
   return (
     <div className={styles.dataStatus}>
-      {shows ? (
+      {displayShows ? (
         <div className={styles.showContainer}>
-          {shows.map((show, i) => (
+          {displayShows.map((show, i) => (
             <ShowItem show={show} setSelectedShow={setSelectedShow} key={i} />
           ))}
         </div>

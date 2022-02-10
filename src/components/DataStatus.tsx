@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import ShowDetail from "./ShowDetail";
 import { SHOWS_STATES } from "../utils/reducer";
 import InitialShows from "./InitialShows";
 
 import styles from "../styles/scss/DataStatus.module.scss";
 import ShowItem from "./ShowItem";
+import useDeepCompareEffect from "use-deep-compare-effect";
 
 const DataStatus = ({
   data,
@@ -21,6 +21,12 @@ const DataStatus = ({
 
   const noPicture = "/images/noimage.png";
   const initialShowData = data.movies.data.concat(data.tvShows.data);
+  const FIRST_CURRENT_STATE = {
+    releaseDate: "release-date",
+    boxOffice: "box-office",
+    search: "search",
+    phase: "phase",
+  };
 
   /* ----------- States ----------- */
   // 表示されている作品
@@ -33,7 +39,7 @@ const DataStatus = ({
   /* --------- Methods --------- */
   /* 適当な関数をinvokeする */
   const invokeShowFunc = () => {
-    filterShowsWithCurrentPhase();
+    filterBaseShowsWithCurrentPhase();
 
     switch (state) {
       case SHOWS_STATES.RELEASE_ORDER:
@@ -53,8 +59,8 @@ const DataStatus = ({
         return null;
     }
   };
-  /* Sort Methods */
 
+  /* return Sorted Array */
   const sortMethods = {
     releaseDate(arr: any[]) {
       // sort the entire array
@@ -91,46 +97,47 @@ const DataStatus = ({
     },
   };
 
-  /* フェーズが指定されている場合、"baseShows"をfilterする */
-  const filterShowsWithCurrentPhase = () => {
-    if (!phaseState.length) {
-      return setBaseShowsArr(initialShowData);
-    }
-    // フェーズが指定されている場合
-    const showsArr = initialShowData.filter((show) =>
-      phaseState.includes(show.phase)
-    );
-
-    return setBaseShowsArr(showsArr);
-  };
-
   /* --------------------------------------
     Release Order
     ------------------------------------- */
-  const showReleaseOrder = (phaseState?: number[]) => {
-    console.count("showReleaseOrder()");
-    if (phaseState?.length) {
-      // from checkbox click
-      filterShowsWithCurrentPhase();
-    }
+  const showReleaseOrder = (fromDetectFunc?: boolean) => {
     const sortedArr = sortMethods.releaseDate(baseShowsArr);
+
+    if (fromDetectFunc) {
+      if (searchText.length) {
+        const searchResult = showSearchResult(true, sortedArr);
+        return setShows(searchResult);
+      }
+      return setShows(sortedArr);
+    }
+
+    const hasAnyState = detectSearchPhaseStates(sortedArr, true);
+    if (hasAnyState) return;
+
     return setShows(sortedArr);
   };
-
   /* --------------------------------------
     Box Office Order
     ------------------------------------- */
-  const showBoxOfficeOrder = (phaseState?: number[]) => {
-    if (phaseState?.length) {
-      // from checkbox click
-      filterShowsWithCurrentPhase();
-    }
+  const showBoxOfficeOrder = (fromDetectFunc?: boolean) => {
     const sortedArr = sortMethods.boxOffice(baseShowsArr);
+
+    if (fromDetectFunc) {
+      if (searchText.length) {
+        const searchResult = showSearchResult(true, sortedArr);
+        return setShows(searchResult);
+      }
+      return setShows(sortedArr);
+    }
+
+    const hasAnyState = detectSearchPhaseStates(sortedArr, true);
+    if (hasAnyState) return;
+
     return setShows(sortedArr);
   };
 
   /* --------------------------------------
-    Phase Order (When a check box clicked)
+    Phase Manipulation (When a check box clicked)
     ------------------------------------- */
   const showPhaseOrder = (phaseState) => {
     // 何も設定されていないとき->初期状態に戻す
@@ -145,10 +152,11 @@ const DataStatus = ({
 
     // Search Text がない場合
     if (!searchText.length) {
-      const hasAnyState = detectCurrentState(phaseState);
-      if (hasAnyState === undefined) return;
+      // Sort状態かどうか
+      const hasAnyState = detectSortState(phaseState);
+      if (hasAnyState) return;
 
-      // Sort Option が無い場合
+      // Sort状態でない場合 -> フェイズだけでfilter
       const sortedArr = initialShowData.filter((show) =>
         phaseState.includes(show.phase)
       );
@@ -160,28 +168,24 @@ const DataStatus = ({
     const sortedArr = initialShowData.filter((show) =>
       phaseState.includes(show.phase)
     );
-    filterShowsWithCurrentPhase();
     return showSearchResult(searchText, sortedArr);
-  };
-
-  const detectCurrentState = (phaseState?: number[]) => {
-    if (isReleaseOrder) {
-      return showReleaseOrder(phaseState);
-    }
-    if (isBoxOfficeOrder) {
-      return showBoxOfficeOrder(phaseState);
-    }
-    return false;
   };
 
   /* -------------------------
     Search Result
     ----------------------- */
-  const showSearchResult = (searchText: string, sortedArr?: object[]) => {
-    if (!searchText) return;
-    filterShowsWithCurrentPhase();
+  const showSearchResult = (
+    textOrTrue: string | true,
+    sortedArr?: object[]
+  ) => {
+    if (textOrTrue === true) {
+      const result = findString(sortedArr, searchText);
+      return result;
+    }
 
-    const result = findString(sortedArr ?? baseShowsArr, searchText);
+    filterBaseShowsWithCurrentPhase();
+
+    const result = findString(sortedArr ?? baseShowsArr, textOrTrue);
     return setShows(result);
   };
   const findString = (showsArr: any[], inputText: string) => {
@@ -218,9 +222,78 @@ const DataStatus = ({
     });
   };
 
-  /*
+  /* -------------------------------
+    Filter Method (フェーズが指定されている場合、"baseShows"をfilterする)
+    ----------------------------- */
+  const filterBaseShowsWithCurrentPhase = (fromDetectFunc?: boolean) => {
+    if (!phaseState.length) {
+      return setBaseShowsArr(initialShowData);
+    }
+    // フェーズが指定されている場合
+    const showsArr = initialShowData.filter((show) =>
+      phaseState.includes(show.phase)
+    );
+
+    if (fromDetectFunc) {
+      setShows(showsArr);
+    }
+    return setBaseShowsArr(showsArr);
+  };
+
+  /* -------------------------
+      Detect Methods
+    ------------------------- */
+  // const detectCurrentState = (sortedArr?: any[]) =>{
+  //   if(searchText.length){
+  //     const hasSortState = detectSortState();
+  //     return;
+  //   }
+  //   detectSortState();
+  // }
+  const detectSearchPhaseStates = (
+    sortedArr: any[],
+    fromSortFunc?: boolean
+  ) => {
+    if (searchText.length) {
+      showSearchResult(searchText, sortedArr);
+      return true;
+    }
+
+    if (fromSortFunc) return;
+
+    if (phaseState?.length) {
+      filterBaseShowsWithCurrentPhase(true);
+      return true;
+    }
+    return false;
+  };
+  const detectSortState = (phaseState?: number[]) => {
+    if (isReleaseOrder) {
+      showReleaseOrder(true);
+      return true;
+    }
+    if (isBoxOfficeOrder) {
+      showBoxOfficeOrder(true);
+      return true;
+    }
+    return false;
+  };
+
+  /* -------------------
+   useDeepCompareEffects
+  --------------------- */
+  useDeepCompareEffect(() => {
+    console.log("%c baseShowsArr has changed", "color: skyblue;", baseShowsArr);
+    detectSortState();
+  }, [baseShowsArr ?? {}]);
+
+  useDeepCompareEffect(() => {
+    console.log("%c shows has changed", "color: rgb(200, 76, 76);", shows);
+  }, [shows ?? {}]);
+
+  /* -------------------
    * useEffects
-   */
+   ------------------- */
   useEffect(() => {
     invokeShowFunc();
   }, [state]);
@@ -242,15 +315,6 @@ const DataStatus = ({
     }
     showSearchResult(searchText);
   }, [searchText]);
-
-  useEffect(() => {
-    console.log("%c baseShowsArr has changed", "color: skyblue;", baseShowsArr);
-    detectCurrentState();
-  }, [baseShowsArr]);
-
-  useEffect(() => {
-    console.log("%c shows has changed", "color: red;", shows);
-  }, [shows]);
 
   return (
     <div className={styles.dataStatus}>

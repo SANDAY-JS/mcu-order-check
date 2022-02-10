@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
 import ShowDetail from "./ShowDetail";
 import { SHOWS_STATES } from "../utils/reducer";
 import InitialShows from "./InitialShows";
@@ -22,6 +21,12 @@ const DataStatus = ({
 
   const noPicture = "/images/noimage.png";
   const initialShowData = data.movies.data.concat(data.tvShows.data);
+  const FIRST_CURRENT_STATE = {
+    releaseDate: "release-date",
+    boxOffice: "box-office",
+    search: "search",
+    phase: "phase",
+  };
 
   /* ----------- States ----------- */
   // 表示されている作品
@@ -55,7 +60,7 @@ const DataStatus = ({
     }
   };
 
-  /* Sort Methods */
+  /* return Sorted Array */
   const sortMethods = {
     releaseDate(arr: any[]) {
       // sort the entire array
@@ -98,7 +103,7 @@ const DataStatus = ({
   const showReleaseOrder = (phaseState?: number[]) => {
     const sortedArr = sortMethods.releaseDate(baseShowsArr);
 
-    const hasAnyState = detectSearchPhaseStates(sortedArr);
+    const hasAnyState = detectSearchPhaseStates(sortedArr, true);
     if (hasAnyState) return;
 
     return setShows(sortedArr);
@@ -107,9 +112,10 @@ const DataStatus = ({
     Box Office Order
     ------------------------------------- */
   const showBoxOfficeOrder = (phaseState?: number[]) => {
+    console.count();
     const sortedArr = sortMethods.boxOffice(baseShowsArr);
 
-    const hasAnyState = detectSearchPhaseStates(sortedArr);
+    const hasAnyState = detectSearchPhaseStates(sortedArr, true);
     if (hasAnyState) return;
 
     return setShows(sortedArr);
@@ -129,13 +135,13 @@ const DataStatus = ({
       return setShows(null);
     }
 
-    // Debug this (to prevent from infinite loop)
     // Search Text がない場合
     if (!searchText.length) {
-      const hasAnyState = detectCurrentSortState(phaseState);
-      if (hasAnyState === undefined) return;
+      // Sort状態かどうか
+      const hasAnyState = detectSortState(phaseState);
+      if (hasAnyState) return;
 
-      // Sort Option が無い場合
+      // Sort状態でない場合 -> フェイズだけでfilter
       const sortedArr = initialShowData.filter((show) =>
         phaseState.includes(show.phase)
       );
@@ -199,7 +205,7 @@ const DataStatus = ({
   /* -------------------------------
     Filter Method (フェーズが指定されている場合、"baseShows"をfilterする)
     ----------------------------- */
-  const filterBaseShowsWithCurrentPhase = () => {
+  const filterBaseShowsWithCurrentPhase = (fromDetectFunc?: boolean) => {
     if (!phaseState.length) {
       return setBaseShowsArr(initialShowData);
     }
@@ -208,29 +214,47 @@ const DataStatus = ({
       phaseState.includes(show.phase)
     );
 
+    if (fromDetectFunc) {
+      setShows(showsArr);
+    }
     return setBaseShowsArr(showsArr);
   };
 
   /* -------------------------
       Detect Methods
     ------------------------- */
-  const detectSearchPhaseStates = (sortedArr: any[]) => {
+  // const detectCurrentState = (sortedArr?: any[]) =>{
+  //   if(searchText.length){
+  //     const hasSortState = detectSortState();
+  //     return;
+  //   }
+  //   detectSortState();
+  // }
+  const detectSearchPhaseStates = (
+    sortedArr: any[],
+    fromSortFunc?: boolean
+  ) => {
     if (searchText.length) {
       showSearchResult(searchText, sortedArr);
       return true;
     }
+
+    if (fromSortFunc) return;
+
     if (phaseState?.length) {
-      filterBaseShowsWithCurrentPhase();
+      filterBaseShowsWithCurrentPhase(true);
       return true;
     }
     return false;
   };
-  const detectCurrentSortState = (phaseState?: number[]) => {
+  const detectSortState = (phaseState?: number[]) => {
     if (isReleaseOrder) {
-      return showReleaseOrder(phaseState);
+      showReleaseOrder(phaseState);
+      return true;
     }
     if (isBoxOfficeOrder) {
-      return showBoxOfficeOrder(phaseState);
+      showBoxOfficeOrder(phaseState);
+      return true;
     }
     return false;
   };
@@ -240,7 +264,7 @@ const DataStatus = ({
   --------------------- */
   useDeepCompareEffect(() => {
     console.log("%c baseShowsArr has changed", "color: skyblue;", baseShowsArr);
-    detectCurrentSortState();
+    detectSortState();
   }, [baseShowsArr ?? {}]);
 
   useDeepCompareEffect(() => {

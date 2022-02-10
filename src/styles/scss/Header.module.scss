@@ -59,9 +59,6 @@
       transform: unset;
       top: unset;
       right: unset;
-      max-height: 80px;
-    }
-    @media screen and (min-width: 1420px) {
       width: max(80px, 5%);
       max-height: 40px;
     }

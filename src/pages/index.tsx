@@ -4,6 +4,7 @@ import DataStatus from "../components/DataStatus";
 import Selector from "../components/Selector";
 import { useReducer, useState } from "react";
 import { initialState, reducerFunc } from "../utils/reducer";
+import Head from "next/head";
 
 const Home: NextPage = ({ data }: any) => {
   // dispatch -> reducerFunc() -> update state
@@ -21,6 +22,10 @@ const Home: NextPage = ({ data }: any) => {
 
   return (
     <>
+      <Head>
+        <title>MCU ORDER CHECK</title>
+      </Head>
+
       <Header />
       <Selector
         dispatch={dispatch}

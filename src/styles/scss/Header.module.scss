@@ -1,4 +1,5 @@
 .header {
+  position: relative;
   width: 100%;
   height: 10vh;
   max-height: 200px;
@@ -7,11 +8,24 @@
 
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
 
   background-color: skyblue;
 
+  @media screen and (min-width: 768px) {
+    justify-content: space-between;
+  }
+
   .createdBy {
+    position: absolute;
+    top: 0;
+    left: 8px;
+    font-size: small;
+
+    @media screen and (min-width: 768px) {
+      position: unset;
+    }
+
     a {
       text-decoration: underline;
     }
@@ -24,10 +38,13 @@
 
   /* === ボタンを表示するエリア ============== */
   .switchArea {
-    position: relative;
+    position: absolute;
+    transform: translateY(-50%);
+    top: 50%;
+    right: 8px;
 
-    width: min(100px, 25%);
-    height: 50%;
+    width: min(80px, 25%);
+    height: 80%;
     max-height: 40px;
 
     color: #222;
@@ -36,6 +53,15 @@
 
     border-radius: 30px;
     background-color: #fafafa;
+
+    @media screen and (min-width: 768px) {
+      position: relative;
+      transform: unset;
+      top: unset;
+      right: unset;
+      width: max(80px, 5%);
+      max-height: 40px;
+    }
 
     &.darkMode {
       color: #fafafa;
@@ -56,6 +82,7 @@
       height: 100%;
       border: 2px solid #222;
       border-radius: 30px;
+      z-index: 10;
 
       svg {
         position: absolute;
@@ -103,7 +130,7 @@
 
     /* === 丸部分のSTYLE（ONのとき） =========================== */
     input[type="checkbox"]:checked ~ .swImg {
-      --tx: 62px;
+      --tx: 200%;
       background: #fafafa;
     }
   }

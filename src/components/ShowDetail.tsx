@@ -12,6 +12,12 @@ const ShowDetail = ({ show, setSelectedShow }) => {
     if (!e.target.closest(".keepShowDetail")) return setSelectedShow(false);
   };
 
+  const priceFormatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+  });
+
   return (
     <div className={`need-darMode-status keepShowDetail ${styles.showDetail}`}>
       {show.trailer_url ? (
@@ -31,8 +37,15 @@ const ShowDetail = ({ show, setSelectedShow }) => {
         />
       )}
       <h4>{show.title}</h4>
-      <p>{show.release_date}</p>
-      <p>Box Office: {show.box_office}</p>
+      <p>
+        Release Date:{" "}
+        {show.release_date
+          ? show.release_date.replace(/-/g, "/")
+          : "not confirmed"}
+      </p>
+      {show.box_office && (
+        <p>{`Box Office: ${priceFormatter.format(show.box_office)}`}</p>
+      )}
       <p>Directed by: {show.directed_by}</p>
       <p>{show.overview}</p>
     </div>

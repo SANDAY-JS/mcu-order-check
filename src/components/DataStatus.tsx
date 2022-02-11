@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import ShowDetail from "./ShowDetail";
-import { initialState, SHOWS_STATES } from "../utils/reducer";
+import { SHOWS_STATES } from "../utils/reducer";
 import InitialShows from "./InitialShows";
 
 import styles from "../styles/scss/DataStatus.module.scss";
+import ShowItem from "./ShowItem";
 
 const DataStatus = ({
   data,
@@ -23,15 +23,25 @@ const DataStatus = ({
 
   /* ----------- States ----------- */
   // 表示されている作品
-  const [shows, setShows] = useState(null);
+  const [displayShows, setDisplayShows] = useState(null);
   // クリックされた作品
   const [selectedShow, setSelectedShow] = useState(null);
   // Showsの基本となるArray
   const [baseShowsArr, setBaseShowsArr] = useState(initialShowData);
 
+  const log = () => {
+    console.log("isReleaseOrder", isReleaseOrder);
+    console.log("isBoxOfficeOrder", isBoxOfficeOrder);
+    console.log("phaseState", phaseState);
+    console.log("baseShows", baseShowsArr);
+    console.log("shows", displayShows);
+  };
+
   /* --------- Methods --------- */
   /* 適当な関数をinvokeする */
   const invokeShowFunc = () => {
+    filterBaseShowsWithCurrentPhase();
+
     switch (state) {
       case SHOWS_STATES.RELEASE_ORDER:
         return showReleaseOrder();
@@ -43,14 +53,16 @@ const DataStatus = ({
         return showPhaseOrder(phaseState);
 
       case SHOWS_STATES.RESET:
-        return setShows(null);
+        setBaseShowsArr(initialShowData);
+        return setDisplayShows(null);
 
       default:
         return null;
     }
   };
-  /* Sort Methods */
-  class SortBy {
+
+  /* return Sorted Array */
+  const sortMethods = {
     releaseDate(arr: any[]) {
       // sort the entire array
       const sortedArr = arr.sort((a, b) => {
@@ -70,109 +82,112 @@ const DataStatus = ({
       );
 
       // combine both arrays (so that the shows which don't have a release date go to the bottom)
-      const completedArr = withReleaseDates.concat(noReleaseDates);
-      return completedArr;
-    }
+      return withReleaseDates.concat(noReleaseDates);
+    },
 
     boxOffice(arr: any[]) {
       const sortedArr = arr.sort((a, b) => b.box_office - a.box_office);
       return sortedArr;
-    }
+    },
 
     titleName() {
       const sortedArr = baseShowsArr.sort((a, b) =>
         a.title.localeCompare(b.title)
       );
       return sortedArr;
-    }
-  }
-
-  /* フェーズが指定されている場合、"baseShows"をfilterする */
-  const filterShowsWithCurrentPhase = () => {
-    if (!phaseState.length) {
-      setBaseShowsArr(initialShowData);
-      return;
-    }
-    // フェーズが指定されている場合
-    const showsArr = initialShowData.filter((show) =>
-      phaseState.includes(show.phase)
-    );
-    return setBaseShowsArr(showsArr);
+    },
   };
-
-  /* Declare Classes */
-  const sortClass = new SortBy();
 
   /* --------------------------------------
     Release Order
     ------------------------------------- */
-  const showReleaseOrder = (fromPhaseFunction?: boolean) => {
-    if (!fromPhaseFunction) {
-      filterShowsWithCurrentPhase();
-    }
-    console.log("phases>>>", phaseState);
-    const sortedArr = sortClass.releaseDate(baseShowsArr);
-    return setShows(sortedArr);
-  };
+  const showReleaseOrder = (fromDetectFunc?: boolean) => {
+    const sortedArr = sortMethods.releaseDate(baseShowsArr);
 
+    if (fromDetectFunc) {
+      if (searchText.length) {
+        const searchResult = showSearchResult(true, sortedArr);
+        return setDisplayShows(searchResult);
+      }
+      return setDisplayShows(sortedArr);
+    }
+
+    const hasAnyState = detectSearchPhaseStates(sortedArr, true);
+    if (hasAnyState) return;
+
+    return setDisplayShows(sortedArr);
+  };
   /* --------------------------------------
     Box Office Order
     ------------------------------------- */
-  const showBoxOfficeOrder = (fromPhaseFunction?: boolean) => {
-    // "showPhaseOrder"から発火された時はスキップ
-    if (!fromPhaseFunction) {
-      filterShowsWithCurrentPhase();
+  const showBoxOfficeOrder = (fromDetectFunc?: boolean) => {
+    const sortedArr = sortMethods.boxOffice(baseShowsArr);
+
+    if (fromDetectFunc) {
+      if (searchText.length) {
+        const searchResult = showSearchResult(true, sortedArr);
+        return setDisplayShows(searchResult);
+      }
+      return setDisplayShows(sortedArr);
     }
-    // 並べる
-    console.log("phases>>>", phaseState);
-    const sortedArr = sortClass.boxOffice(baseShowsArr);
-    return setShows(sortedArr);
+
+    const hasAnyState = detectSearchPhaseStates(sortedArr, true);
+    if (hasAnyState) return;
+
+    return setDisplayShows(sortedArr);
   };
 
   /* --------------------------------------
-    Phase Order (When any of the check box clicked)
+    Phase Manipulation (When a check box clicked)
     ------------------------------------- */
   const showPhaseOrder = (phaseState) => {
-    console.log(`phase: %c ${phaseState}`, "color: yellow");
+    // 何も設定されていないとき->初期状態に戻す
+    if (
+      !searchText.length &&
+      !isReleaseOrder &&
+      !isBoxOfficeOrder &&
+      !phaseState.length
+    ) {
+      return setDisplayShows(null);
+    }
+
     // Search Text がない場合
     if (!searchText.length) {
-      const hasAnyState = detectCurrentState();
+      // Sort状態かどうか
+      const hasAnyState = detectSortState(phaseState);
       if (hasAnyState) return;
 
-      const sortedArr = baseShowsArr.filter((show) =>
+      // Sort状態でない場合 -> フェイズだけでfilter
+      const sortedArr = initialShowData.filter((show) =>
         phaseState.includes(show.phase)
       );
-      return setShows(sortedArr);
+      return setDisplayShows(sortedArr);
     }
 
     // Search Text がある場合
     const sortedArr = initialShowData.filter((show) =>
       phaseState.includes(show.phase)
     );
-    filterShowsWithCurrentPhase();
     return showSearchResult(searchText, sortedArr);
-  };
-  const detectCurrentState = () => {
-    if (isReleaseOrder) {
-      showReleaseOrder(true);
-      return true;
-    }
-    if (isBoxOfficeOrder) {
-      showBoxOfficeOrder(true);
-      return true;
-    }
-    return false;
   };
 
   /* -------------------------
     Search Result
     ----------------------- */
-  const showSearchResult = (searchText, sortedArr?: object[]) => {
-    if (!searchText) return;
-    filterShowsWithCurrentPhase();
+  const showSearchResult = (
+    textOrTrue: string | true,
+    sortedArr?: object[]
+  ) => {
+    if (!searchText.length) return;
 
-    const result = findString(sortedArr ?? baseShowsArr, searchText);
-    return setShows(result);
+    if (textOrTrue === true) {
+      return findString(sortedArr, searchText);
+    }
+
+    filterBaseShowsWithCurrentPhase();
+
+    const result = findString(sortedArr ?? baseShowsArr, textOrTrue);
+    return setDisplayShows(result);
   };
   const findString = (showsArr: any[], inputText: string) => {
     // 入力テキストが複数の単語か = 入力されたテキストに空白が含まれているか
@@ -208,6 +223,59 @@ const DataStatus = ({
     });
   };
 
+  /* -------------------------------
+    Filter Method (フェーズが指定されている場合、"baseShows"をfilterする)
+    ----------------------------- */
+  const filterBaseShowsWithCurrentPhase = (fromDetectFunc?: boolean) => {
+    if (!phaseState.length) {
+      return setBaseShowsArr(initialShowData);
+    }
+    // フェーズが指定されている場合
+    const showsArr = initialShowData.filter((show) =>
+      phaseState.includes(show.phase)
+    );
+
+    if (fromDetectFunc) {
+      setDisplayShows(showsArr);
+    }
+    return setBaseShowsArr(showsArr);
+  };
+
+  /* -------------------------
+      Detect Methods
+    ------------------------- */
+  const detectSearchPhaseStates = (
+    sortedArr: any[],
+    fromSortFunc?: boolean
+  ) => {
+    if (searchText.length) {
+      showSearchResult(searchText, sortedArr);
+      return true;
+    }
+
+    if (fromSortFunc) return;
+
+    if (phaseState?.length) {
+      filterBaseShowsWithCurrentPhase(true);
+      return true;
+    }
+    return false;
+  };
+  const detectSortState = (phaseState?: number[]) => {
+    if (isReleaseOrder) {
+      showReleaseOrder(true);
+      return true;
+    }
+    if (isBoxOfficeOrder) {
+      showBoxOfficeOrder(true);
+      return true;
+    }
+    return false;
+  };
+
+  /* -------------------
+   * useEffects
+   ------------------- */
   useEffect(() => {
     invokeShowFunc();
   }, [state]);
@@ -231,40 +299,24 @@ const DataStatus = ({
   }, [searchText]);
 
   useEffect(() => {
-    console.log("shows>>>", shows);
-  }, [shows]);
+    console.log("%c baseShowsArr has changed", "color: skyblue;", baseShowsArr);
+    detectSortState();
+  }, [baseShowsArr]);
+
+  useEffect(() => {
+    console.log(
+      "%c shows has changed",
+      "color: rgb(200, 76, 76);",
+      displayShows
+    );
+  }, [displayShows]);
 
   return (
     <div className={styles.dataStatus}>
-      {shows ? (
+      {displayShows ? (
         <div className={styles.showContainer}>
-          {shows.map((show, i) => (
-            <div
-              key={i}
-              className={`keepShowDetail ${styles.showContainer__showItem}`}
-              onClick={() => setSelectedShow(show)}
-            >
-              <p
-                key={show.title}
-                className={styles.showContainer__showItem__title}
-              >
-                {show.title}
-              </p>
-              <div
-                key={show.cover_url}
-                className={styles.showContainer__showItem__imageWrap}
-              >
-                <Image
-                  src={show.cover_url ?? noPicture}
-                  alt={show.title}
-                  width={256}
-                  height={379}
-                  layout="intrinsic"
-                  placeholder="blur"
-                  blurDataURL={show.cover_url ?? noPicture}
-                />
-              </div>
-            </div>
+          {displayShows.map((show, i) => (
+            <ShowItem show={show} setSelectedShow={setSelectedShow} key={i} />
           ))}
         </div>
       ) : (

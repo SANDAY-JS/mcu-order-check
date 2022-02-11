@@ -16,10 +16,17 @@ const Header: NextComponentType = () => {
   return (
     <div className={styles.header}>
       <div className={styles.createdBy}>
-        created by <a href="https://github.com/SANDAY-JS">SANDAY-JS</a>
+        created by{" "}
+        <a
+          href="https://github.com/SANDAY-JS"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          SANDAY-JS
+        </a>
       </div>
 
-      <h2 className={styles.pageTitle}>MCU Reccomendation For You</h2>
+      <h2 className={styles.pageTitle}>MCU ORDER CHECK</h2>
 
       <div
         className={`keepShowDetail ${styles.switchArea} ${

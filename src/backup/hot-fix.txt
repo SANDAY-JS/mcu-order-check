@@ -1,3 +1,0 @@
-An Error Occurs When...
-- "SearchText"->Reset button
-- "SearchText"->BoxOffice button || Release Date button

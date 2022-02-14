@@ -11,6 +11,7 @@ const DataStatus = ({
   state,
   phaseState,
   isReleaseOrder,
+  isDurationOrder,
   isBoxOfficeOrder,
   isChronologicalOrder,
   searchText,
@@ -47,11 +48,14 @@ const DataStatus = ({
       case SHOWS_STATES.RELEASE_ORDER:
         return showReleaseOrder();
 
+      case SHOWS_STATES.CHRONOLOGY:
+        return showChronologicalOrder();
+
       case SHOWS_STATES.BOX_OFFICE:
         return showBoxOfficeOrder();
 
-      case SHOWS_STATES.CHRONOLOGY:
-        return showChronologicalOrder();
+      case SHOWS_STATES.DURATION:
+        return showDurationOrder();
 
       case SHOWS_STATES.PHASE:
         return showPhaseOrder(phaseState);
@@ -108,6 +112,18 @@ const DataStatus = ({
       return withChronology.concat(noChronology);
     },
 
+    duration(arr: any[]) {
+      const sortedArr = arr.sort((a, b) => b.duration - a.duration);
+
+      // get the shows which have release dates
+      const withDuration = sortedArr.filter((show) => show.duration !== null);
+      // get the shows which don't have release dates
+      const noDuration = sortedArr.filter((show) => show.duration === null);
+
+      // combine both arrays (so that the shows which don't have a release date go to the bottom)
+      return withDuration.concat(noDuration);
+    },
+
     titleName() {
       const sortedArr = baseShowsArr.sort((a, b) =>
         a.title.localeCompare(b.title)
@@ -160,6 +176,25 @@ const DataStatus = ({
     ------------------------------------- */
   const showChronologicalOrder = (fromDetectFunc?: boolean) => {
     const sortedArr = sortMethods.chronology(baseShowsArr);
+
+    if (fromDetectFunc) {
+      if (searchText.length) {
+        const searchResult = showSearchResult(true, sortedArr);
+        return setDisplayShows(searchResult);
+      }
+      return setDisplayShows(sortedArr);
+    }
+
+    const hasAnyState = detectSearchPhaseStates(sortedArr, true);
+    if (hasAnyState) return;
+
+    return setDisplayShows(sortedArr);
+  };
+  /* --------------------------------------
+    Duration Order
+    ------------------------------------- */
+  const showDurationOrder = (fromDetectFunc?: boolean) => {
+    const sortedArr = sortMethods.duration(baseShowsArr);
 
     if (fromDetectFunc) {
       if (searchText.length) {
@@ -310,6 +345,10 @@ const DataStatus = ({
     }
     if (isChronologicalOrder) {
       showChronologicalOrder(true);
+      return true;
+    }
+    if (isDurationOrder) {
+      showDurationOrder(true);
       return true;
     }
     return false;

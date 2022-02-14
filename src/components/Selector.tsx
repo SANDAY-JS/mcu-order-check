@@ -13,6 +13,8 @@ const Selector = ({
   setIsReleaseOrder,
   isChronologicalOrder,
   setIsChronologicalOrder,
+  isDurationOrder,
+  setIsDurationOrder,
   searchText,
   setSearchText,
 }) => {
@@ -33,36 +35,38 @@ const Selector = ({
   };
 
   const showReleaseOrder = () => {
-    if (isBoxOfficeOrder) {
-      setIsBoxOfficeOrder(false);
-    }
-    if (isChronologicalOrder) {
-      setIsChronologicalOrder(false);
-    }
+    resetCurrentOrder();
+
     setIsReleaseOrder(!isReleaseOrder);
     return dispatch(SHOWS_STATES.RELEASE_ORDER);
   };
 
   const showBoxOfficeOrder = () => {
-    if (isReleaseOrder) {
-      setIsReleaseOrder(false);
-    }
-    if (isChronologicalOrder) {
-      setIsChronologicalOrder(false);
-    }
+    resetCurrentOrder();
+
     setIsBoxOfficeOrder(!isBoxOfficeOrder);
     return dispatch(SHOWS_STATES.BOX_OFFICE);
   };
 
   const showChronologicalOrder = () => {
-    if (isReleaseOrder) {
-      setIsReleaseOrder(false);
-    }
-    if (isBoxOfficeOrder) {
-      setIsBoxOfficeOrder(false);
-    }
+    resetCurrentOrder();
+
     setIsChronologicalOrder(!isChronologicalOrder);
     return dispatch(SHOWS_STATES.CHRONOLOGY);
+  };
+
+  const showDurationOrder = () => {
+    resetCurrentOrder();
+
+    setIsDurationOrder(!isDurationOrder);
+    return dispatch(SHOWS_STATES.DURATION);
+  };
+
+  const resetCurrentOrder = () => {
+    setIsReleaseOrder(false);
+    setIsChronologicalOrder(false);
+    setIsBoxOfficeOrder(false);
+    setIsDurationOrder(false);
   };
 
   const handleSearch = (e) => {
@@ -76,6 +80,7 @@ const Selector = ({
     setPhaseState([]);
     setSearchText("");
     setIsReleaseOrder(false);
+    setIsDurationOrder(false);
     setIsBoxOfficeOrder(false);
     setIsChronologicalOrder(false);
     searchInputRef.current.value = "";
@@ -127,6 +132,16 @@ const Selector = ({
           onClick={showBoxOfficeOrder}
         >
           Box Office
+        </div>
+
+        {/* Box Office Order */}
+        <div
+          className={`${styles.changeOrder} ${
+            isDurationOrder && styles.active
+          }`}
+          onClick={showDurationOrder}
+        >
+          Duration
         </div>
       </div>
 

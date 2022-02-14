@@ -12,6 +12,7 @@ const DataStatus = ({
   phaseState,
   isReleaseOrder,
   isBoxOfficeOrder,
+  isChronologicalOrder,
   searchText,
   excludeWords,
 }) => {
@@ -48,6 +49,9 @@ const DataStatus = ({
 
       case SHOWS_STATES.BOX_OFFICE:
         return showBoxOfficeOrder();
+
+      case SHOWS_STATES.CHRONOLOGY:
+        return showChronologicalOrder();
 
       case SHOWS_STATES.PHASE:
         return showPhaseOrder(phaseState);
@@ -90,6 +94,20 @@ const DataStatus = ({
       return sortedArr;
     },
 
+    chronology(arr: any[]) {
+      const sortedArr = arr.sort((a, b) => a.chronology - b.chronology);
+
+      // get the shows which have release dates
+      const withChronology = sortedArr.filter(
+        (show) => show.chronology !== null
+      );
+      // get the shows which don't have release dates
+      const noChronology = sortedArr.filter((show) => show.chronology === null);
+
+      // combine both arrays (so that the shows which don't have a release date go to the bottom)
+      return withChronology.concat(noChronology);
+    },
+
     titleName() {
       const sortedArr = baseShowsArr.sort((a, b) =>
         a.title.localeCompare(b.title)
@@ -122,6 +140,26 @@ const DataStatus = ({
     ------------------------------------- */
   const showBoxOfficeOrder = (fromDetectFunc?: boolean) => {
     const sortedArr = sortMethods.boxOffice(baseShowsArr);
+
+    if (fromDetectFunc) {
+      if (searchText.length) {
+        const searchResult = showSearchResult(true, sortedArr);
+        return setDisplayShows(searchResult);
+      }
+      return setDisplayShows(sortedArr);
+    }
+
+    const hasAnyState = detectSearchPhaseStates(sortedArr, true);
+    if (hasAnyState) return;
+
+    return setDisplayShows(sortedArr);
+  };
+
+  /* --------------------------------------
+    Chronology Order
+    ------------------------------------- */
+  const showChronologicalOrder = (fromDetectFunc?: boolean) => {
+    const sortedArr = sortMethods.chronology(baseShowsArr);
 
     if (fromDetectFunc) {
       if (searchText.length) {
@@ -268,6 +306,10 @@ const DataStatus = ({
     }
     if (isBoxOfficeOrder) {
       showBoxOfficeOrder(true);
+      return true;
+    }
+    if (isChronologicalOrder) {
+      showChronologicalOrder(true);
       return true;
     }
     return false;

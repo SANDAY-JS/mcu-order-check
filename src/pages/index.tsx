@@ -13,8 +13,10 @@ const Home: NextPage = ({ data }: any) => {
   // phase state
   const [phaseState, setPhaseState] = useState<number[]>([]);
 
-  const [isReleaseOrder, setIsReleaseOrder] = useState(false);
-  const [isBoxOfficeOrder, setIsBoxOfficeOrder] = useState(false);
+  const [isReleaseOrder, setIsReleaseOrder] = useState<boolean>(false);
+  const [isBoxOfficeOrder, setIsBoxOfficeOrder] = useState<boolean>(false);
+  const [isChronologicalOrder, setIsChronologicalOrder] =
+    useState<boolean>(false);
 
   // search
   const [searchText, setSearchText] = useState("");
@@ -35,6 +37,8 @@ const Home: NextPage = ({ data }: any) => {
         setIsBoxOfficeOrder={setIsBoxOfficeOrder}
         isReleaseOrder={isReleaseOrder}
         setIsReleaseOrder={setIsReleaseOrder}
+        isChronologicalOrder={isChronologicalOrder}
+        setIsChronologicalOrder={setIsChronologicalOrder}
         searchText={searchText}
         setSearchText={setSearchText}
       />
@@ -44,6 +48,7 @@ const Home: NextPage = ({ data }: any) => {
         phaseState={phaseState}
         isReleaseOrder={isReleaseOrder}
         isBoxOfficeOrder={isBoxOfficeOrder}
+        isChronologicalOrder={isChronologicalOrder}
         searchText={searchText}
         excludeWords={excludeWords}
       />

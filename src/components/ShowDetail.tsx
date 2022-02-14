@@ -43,6 +43,7 @@ const ShowDetail = ({ show, setSelectedShow }) => {
           ? show.release_date.replace(/-/g, "/")
           : "not confirmed"}
       </p>
+      <p>Chronological Number: {show.chronology ?? "unknown"}</p>
       {show.box_office && (
         <p>{`Box Office: ${priceFormatter.format(show.box_office)}`}</p>
       )}

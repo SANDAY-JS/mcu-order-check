@@ -11,6 +11,8 @@ const Selector = ({
   setIsBoxOfficeOrder,
   isReleaseOrder,
   setIsReleaseOrder,
+  isChronologicalOrder,
+  setIsChronologicalOrder,
   searchText,
   setSearchText,
 }) => {
@@ -34,6 +36,9 @@ const Selector = ({
     if (isBoxOfficeOrder) {
       setIsBoxOfficeOrder(false);
     }
+    if (isChronologicalOrder) {
+      setIsChronologicalOrder(false);
+    }
     setIsReleaseOrder(!isReleaseOrder);
     return dispatch(SHOWS_STATES.RELEASE_ORDER);
   };
@@ -42,9 +47,22 @@ const Selector = ({
     if (isReleaseOrder) {
       setIsReleaseOrder(false);
     }
+    if (isChronologicalOrder) {
+      setIsChronologicalOrder(false);
+    }
     setIsBoxOfficeOrder(!isBoxOfficeOrder);
-
     return dispatch(SHOWS_STATES.BOX_OFFICE);
+  };
+
+  const showChronologicalOrder = () => {
+    if (isReleaseOrder) {
+      setIsReleaseOrder(false);
+    }
+    if (isBoxOfficeOrder) {
+      setIsBoxOfficeOrder(false);
+    }
+    setIsChronologicalOrder(!isChronologicalOrder);
+    return dispatch(SHOWS_STATES.CHRONOLOGY);
   };
 
   const handleSearch = (e) => {
@@ -59,6 +77,7 @@ const Selector = ({
     setSearchText("");
     setIsReleaseOrder(false);
     setIsBoxOfficeOrder(false);
+    setIsChronologicalOrder(false);
     searchInputRef.current.value = "";
 
     return dispatch(SHOWS_STATES.RESET);
@@ -87,7 +106,17 @@ const Selector = ({
           className={`${styles.changeOrder} ${isReleaseOrder && styles.active}`}
           onClick={showReleaseOrder}
         >
-          Release Order
+          Release Date
+        </div>
+
+        {/* Chronology Order */}
+        <div
+          className={`${styles.changeOrder} ${
+            isChronologicalOrder && styles.active
+          }`}
+          onClick={showChronologicalOrder}
+        >
+          Chronology
         </div>
 
         {/* Box Office Order */}

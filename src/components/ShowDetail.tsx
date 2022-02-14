@@ -44,6 +44,7 @@ const ShowDetail = ({ show, setSelectedShow }) => {
           : "not confirmed"}
       </p>
       <p>Chronological Number: {show.chronology ?? "unknown"}</p>
+      <p>Duration: {show.duration ? `${show.duration} minutes` : "-"}</p>
       {show.box_office && (
         <p>{`Box Office: ${priceFormatter.format(show.box_office)}`}</p>
       )}

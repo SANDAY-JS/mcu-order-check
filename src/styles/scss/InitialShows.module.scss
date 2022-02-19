@@ -19,6 +19,10 @@
 
     .initialShowContainer__showItem__imageWrap {
       @extend .showContainer__showItem__imageWrap;
+
+      .initialShowContainer__showItem__imageWrap__copyright {
+        @extend .showContainer__showItem__imageWrap__copyright;
+      }
     }
   }
 }

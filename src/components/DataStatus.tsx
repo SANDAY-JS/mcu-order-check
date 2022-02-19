@@ -238,9 +238,13 @@ const DataStatus = ({
     }
 
     // Search Text がある場合
-    const sortedArr = initialShowData.filter((show) =>
-      phaseState.includes(show.phase)
-    );
+    const sortedArr = initialShowData.filter((show) => {
+      if (phaseState.length > 0) {
+        return phaseState.includes(show.phase);
+      }
+      // when "All" clicked
+      return [1, 2, 3, 4].includes(show.phase);
+    });
     return showSearchResult(searchText, sortedArr);
   };
 

@@ -1,7 +1,7 @@
 import styles from "../styles/scss/Selector.module.scss";
 import { SHOWS_STATES } from "../utils/reducer";
 import { FcSearch } from "react-icons/fc";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const Selector = ({
   dispatch,
@@ -18,19 +18,27 @@ const Selector = ({
   searchText,
   setSearchText,
 }) => {
+  const [checkboxAllChecked, setCheckboxAllChecked] = useState<boolean>(true);
   // checkboxRef in phaseState
   const searchInputRef = useRef(null);
   const filterCheckboxRef = useRef([]);
 
+  const setAllPhases = () => {
+    // uncheck other check boxes
+    filterCheckboxRef.current.forEach((box) => (box.checked = false));
+    return setPhaseState([]);
+  };
+
   const addPhaseState = (addedPhase: number) => {
+    if (checkboxAllChecked) setCheckboxAllChecked(false);
     if (!phaseState) return setPhaseState([addedPhase]);
 
-    // check if a phase state is included
+    // check if given phase is already included
     const isPhaseIncluded = phaseState.some((state) => state === addedPhase);
     // if it is, remove that phase from the array
     if (isPhaseIncluded)
       return setPhaseState(phaseState.filter((state) => state !== addedPhase));
-    // if not, add the phase to the array
+    // if not, add the given phase to the array
     return setPhaseState([...phaseState, addedPhase]);
   };
 
@@ -87,6 +95,9 @@ const Selector = ({
 
     return dispatch(SHOWS_STATES.RESET);
   };
+  useEffect(() => {
+    if (phaseState.length === 0) return setCheckboxAllChecked(true);
+  }, [phaseState]);
 
   return (
     <div className={styles.selector}>
@@ -152,6 +163,15 @@ const Selector = ({
           className={`${styles.changeOrder} ${styles.phaseSelector}`}
           onClick={() => dispatch(SHOWS_STATES.PHASE)}
         >
+          <div className={styles.phaseSelector__item}>
+            <label htmlFor="all">All</label>
+            <input
+              type="checkbox"
+              id="all"
+              onChange={setAllPhases}
+              checked={checkboxAllChecked}
+            />
+          </div>
           <div className={styles.phaseSelector__item}>
             <label htmlFor="phase1">1</label>
             <input

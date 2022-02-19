@@ -20,10 +20,20 @@
   }
 
   .showContainer__showItem__imageWrap {
+    position: relative;
     width: 100%;
     max-width: 100%;
     height: fit-content;
 
     overflow: hidden;
+
+    .showContainer__showItem__imageWrap__copyright {
+      position: absolute;
+      right: 4px;
+      bottom: 8px;
+
+      color: #9e9e9e;
+      font-size: 0.8rem;
+    }
   }
 }

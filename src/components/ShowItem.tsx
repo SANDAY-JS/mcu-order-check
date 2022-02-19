@@ -20,6 +20,9 @@ const ShowItem = ({ show, setSelectedShow }) => {
           placeholder="blur"
           blurDataURL={show.cover_url ?? noPicture}
         />
+        <span className={styles.showContainer__showItem__imageWrap__copyright}>
+          @ {show.release_date?.slice(0, 4)} Disney / Marvel
+        </span>
       </div>
     </div>
   );

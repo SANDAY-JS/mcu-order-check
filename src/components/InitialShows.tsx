@@ -36,6 +36,13 @@ const InitialShows = ({ baseShowsArr, noPicture }) => {
                 height={379}
                 layout="intrinsic"
               />
+              <span
+                className={
+                  styles.initialShowContainer__showItem__imageWrap__copyright
+                }
+              >
+                @ {show.release_date?.slice(0, 4)} Disney / Marvel
+              </span>
             </div>
           </div>
         ))}

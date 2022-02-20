@@ -16,6 +16,8 @@ const DataStatus = ({
   isChronologicalOrder,
   searchText,
   excludeWords,
+  darkMode,
+  animateVariables,
 }) => {
   const firstUpdate1 = useRef(true);
   const firstUpdate2 = useRef(true);
@@ -409,7 +411,12 @@ const DataStatus = ({
       )}
 
       {selectedShow && (
-        <ShowDetail show={selectedShow} setSelectedShow={setSelectedShow} />
+        <ShowDetail
+          show={selectedShow}
+          setSelectedShow={setSelectedShow}
+          darkMode={darkMode}
+          animateVariables={animateVariables}
+        />
       )}
     </div>
   );

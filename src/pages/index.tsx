@@ -1,14 +1,24 @@
 import type { GetStaticProps, NextPage } from "next";
+import Head from "next/head";
+import { Power2 } from "gsap";
+import { useReducer, useState } from "react";
 import Header from "../components/Header";
 import DataStatus from "../components/DataStatus";
 import Selector from "../components/Selector";
-import { useReducer, useState } from "react";
 import { initialState, reducerFunc } from "../utils/reducer";
-import Head from "next/head";
 
 const Home: NextPage = ({ data }: any) => {
   // dispatch -> reducerFunc() -> update state
   const [state, dispatch] = useReducer(reducerFunc, initialState);
+
+  // dark mode
+  const [darkMode, setDarkMode] = useState<boolean>(false);
+  const animateVariables = {
+    white: "#fafafa",
+    black: "#222222",
+    duration: 0.4,
+    ease: Power2.easeInOut,
+  };
 
   // phase state
   const [phaseState, setPhaseState] = useState<number[]>([]);
@@ -29,7 +39,11 @@ const Home: NextPage = ({ data }: any) => {
         <title>MCU ORDER CHECK</title>
       </Head>
 
-      <Header />
+      <Header
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
+        animateVariables={animateVariables}
+      />
       <Selector
         dispatch={dispatch}
         phaseState={phaseState}
@@ -55,6 +69,8 @@ const Home: NextPage = ({ data }: any) => {
         isDurationOrder={isDurationOrder}
         searchText={searchText}
         excludeWords={excludeWords}
+        darkMode={darkMode}
+        animateVariables={animateVariables}
       />
     </>
   );

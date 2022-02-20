@@ -1,16 +1,45 @@
-import { NextComponentType } from "next";
-import { useEffect, useState } from "react";
-import styles from "../styles/scss/Header.module.scss";
+import { useLayoutEffect, useRef } from "react";
 import { MdOutlineDarkMode } from "react-icons/md";
 import { ImSun } from "react-icons/im";
+import styles from "../styles/scss/Header.module.scss";
+import gsap from "gsap";
 
-const Header: NextComponentType = () => {
-  const [darkMode, setDarkMode] = useState(false);
+const Header = ({ darkMode, setDarkMode, animateVariables }) => {
+  const firstUpdate = useRef(true);
 
-  useEffect(() => {
-    if (darkMode)
-      return document.querySelector("body").classList.add("darkMode");
-    return document.querySelector("body").classList.remove("darkMode");
+  const tl = gsap.timeline({});
+
+  useLayoutEffect(() => {
+    if (firstUpdate.current) {
+      firstUpdate.current = false;
+      return;
+    }
+
+    tl.addLabel("start")
+      .to(
+        ".animatedBox",
+        animateVariables.duration,
+        {
+          color: darkMode ? animateVariables.white : animateVariables.black,
+          backgroundColor: darkMode
+            ? animateVariables.black
+            : animateVariables.white,
+          ease: animateVariables.ease,
+        },
+        "start"
+      )
+      .to(
+        "body",
+        animateVariables.duration,
+        {
+          color: darkMode ? animateVariables.white : animateVariables.black,
+          backgroundColor: darkMode
+            ? animateVariables.black
+            : animateVariables.white,
+          ease: animateVariables.ease,
+        },
+        "start"
+      );
   }, [darkMode]);
 
   return (
@@ -29,7 +58,7 @@ const Header: NextComponentType = () => {
       <h2 className={styles.pageTitle}>MCU ORDER CHECK</h2>
 
       <div
-        className={`keepShowDetail ${styles.switchArea} ${
+        className={`animatedBox keepShowDetail ${styles.switchArea} ${
           darkMode && styles.darkMode
         }`}
       >

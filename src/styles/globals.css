@@ -23,14 +23,6 @@ body {
   color: #222;
   background-color: #fafafa;
 }
-body.darkMode {
-  color: #fafafa;
-  background-color: #222;
-}
-body.darkMode .need-darMode-status {
-  border: 4px solid #fafafa;
-  background-color: #222;
-}
 
 body > div#__next {
   width: 100%;

@@ -1,12 +1,30 @@
+import gsap from "gsap";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import styles from "../styles/scss/ShowDetail.module.scss";
 
-const ShowDetail = ({ show, setSelectedShow }) => {
+const ShowDetail = ({ show, setSelectedShow, darkMode, animateVariables }) => {
+  const tl = gsap.timeline({});
+
   useEffect(() => {
     document.addEventListener("click", handleDesMenu);
     return () => document.removeEventListener("click", handleDesMenu);
   }, []);
+
+  useLayoutEffect(() => {
+    tl.to(
+      ".need-darkMode-status",
+      animateVariables.duration,
+      {
+        borderColor: darkMode ? animateVariables.white : animateVariables.black,
+        backgroundColor: darkMode
+          ? animateVariables.black
+          : animateVariables.white,
+        ease: animateVariables.ease,
+      },
+      "start"
+    );
+  }, [darkMode]);
 
   const handleDesMenu = (e) => {
     if (!e.target.closest(".keepShowDetail")) return setSelectedShow(false);
@@ -19,7 +37,7 @@ const ShowDetail = ({ show, setSelectedShow }) => {
   });
 
   return (
-    <div className={`need-darMode-status keepShowDetail ${styles.showDetail}`}>
+    <div className={`need-darkMode-status keepShowDetail ${styles.showDetail}`}>
       {show.trailer_url ? (
         <iframe
           src={show.trailer_url}

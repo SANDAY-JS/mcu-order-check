@@ -116,7 +116,8 @@ $BGColor: whitesmoke;
 
       input {
         position: relative;
-        // checkbox background
+        cursor: pointer;
+
         &::before {
           content: "";
           display: none;
@@ -125,6 +126,7 @@ $BGColor: whitesmoke;
           height: 100%;
           cursor: pointer;
           background-color: #222;
+          border-radius: 0.2em;
         }
         &:hover::before {
           background-color: rgb(124, 124, 124);

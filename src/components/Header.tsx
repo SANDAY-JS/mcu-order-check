@@ -71,7 +71,6 @@ const Header = ({ darkMode, setDarkMode, animateVariables }) => {
         <label htmlFor="switch">
           {darkMode ? <ImSun /> : <MdOutlineDarkMode />}
         </label>
-        <div className={styles.swImg} />
       </div>
     </div>
   );

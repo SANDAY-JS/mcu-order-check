@@ -69,7 +69,16 @@ const Header = ({ darkMode, setDarkMode, animateVariables }) => {
           onClick={() => setDarkMode(!darkMode)}
         />
         <label htmlFor="switch">
-          {darkMode ? <ImSun /> : <MdOutlineDarkMode />}
+          <ImSun
+            className={`${styles.sun} ${
+              darkMode ? styles.fadeIn : styles.fadeOut
+            }`}
+          />
+          <MdOutlineDarkMode
+            className={`${styles.moon} ${
+              darkMode ? styles.fadeOut : styles.fadeIn
+            }`}
+          />
         </label>
       </div>
     </div>

@@ -100,13 +100,27 @@
       }
 
       svg {
-        position: absolute;
-        transform: translateY(-50%);
-        top: 50%;
-        right: 0.5em;
-
-        color: #222;
         font-size: 2rem;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        transition: opacity 0.4s ease-in-out 0.3s;
+
+        &.moon {
+          right: 0.5em;
+          color: #222;
+        }
+        &.sun {
+          left: 0.5em;
+          color: #fafafa;
+        }
+
+        &.fadeIn {
+          opacity: 1;
+        }
+        &.fadeOut {
+          opacity: 0;
+        }
       }
     }
 
@@ -120,10 +134,6 @@
         transform: translateX(-100%);
         left: calc(100% - 0.5em);
         background-color: #fafafa;
-      }
-      svg {
-        left: 0.5em;
-        color: #fafafa;
       }
     }
   }

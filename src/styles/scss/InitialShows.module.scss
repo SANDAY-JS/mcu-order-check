@@ -3,6 +3,7 @@
 .initialShowsContainer {
   display: flex;
   width: max(600%, 2500px);
+  pointer-events: none;
 }
 
 .initialShowContainer {

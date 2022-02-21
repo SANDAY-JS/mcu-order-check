@@ -101,20 +101,6 @@ const Selector = ({
 
   return (
     <div className={styles.selector}>
-      {/* Search Box */}
-      <div className={styles.selector__itemContainer}>
-        <p className={styles.selector__itemContainer__title}>Search</p>
-        <div className={styles.searchContainer}>
-          <FcSearch className={styles.searchIcon} />
-          <input
-            ref={searchInputRef}
-            type="text"
-            onChange={handleSearch}
-            className={styles.textInput}
-          />
-        </div>
-      </div>
-
       <div className={styles.selector__itemContainer}>
         <p className={styles.selector__itemContainer__title}>Sort</p>
         {/* Release Order */}
@@ -157,56 +143,70 @@ const Selector = ({
       </div>
 
       <div className={styles.selector__itemContainer}>
-        <p className={styles.selector__itemContainer__title}>Phase</p>
+        <p className={styles.selector__itemContainer__title}>Filter</p>
+        {/* Search Box */}
+        <div className={styles.searchContainer}>
+          <FcSearch className={styles.searchIcon} />
+          <input
+            ref={searchInputRef}
+            type="text"
+            onChange={handleSearch}
+            className={styles.textInput}
+          />
+        </div>
+
         {/* Phase Order */}
-        <div
-          className={`${styles.changeOrder} ${styles.phaseSelector}`}
-          onClick={() => dispatch(SHOWS_STATES.PHASE)}
-        >
-          <div className={styles.phaseSelector__item}>
-            <label htmlFor="all">All</label>
-            <input
-              type="checkbox"
-              id="all"
-              onChange={setAllPhases}
-              checked={checkboxAllChecked}
-            />
-          </div>
-          <div className={styles.phaseSelector__item}>
-            <label htmlFor="phase1">1</label>
-            <input
-              ref={(el) => (filterCheckboxRef.current[0] = el)}
-              type="checkbox"
-              id="phase1"
-              onChange={() => addPhaseState(1)}
-            />
-          </div>
-          <div className={styles.phaseSelector__item}>
-            <label htmlFor="phase2">2</label>
-            <input
-              ref={(el) => (filterCheckboxRef.current[1] = el)}
-              type="checkbox"
-              id="phase2"
-              onChange={() => addPhaseState(2)}
-            />
-          </div>
-          <div className={styles.phaseSelector__item}>
-            <label htmlFor="phase3">3</label>
-            <input
-              ref={(el) => (filterCheckboxRef.current[2] = el)}
-              type="checkbox"
-              id="phase3"
-              onChange={() => addPhaseState(3)}
-            />
-          </div>
-          <div className={styles.phaseSelector__item}>
-            <label htmlFor="phase4">4</label>
-            <input
-              ref={(el) => (filterCheckboxRef.current[3] = el)}
-              type="checkbox"
-              id="phase4"
-              onChange={() => addPhaseState(4)}
-            />
+        <div className={`${styles.changeOrder} ${styles.phaseSelector}`}>
+          <p>Phase</p>
+          <div
+            className={`${styles.phaseSelector__container}`}
+            onClick={() => dispatch(SHOWS_STATES.PHASE)}
+          >
+            <div className={styles.phaseSelector__container__item}>
+              <label htmlFor="all">All</label>
+              <input
+                type="checkbox"
+                id="all"
+                onChange={setAllPhases}
+                checked={checkboxAllChecked}
+              />
+            </div>
+            <div className={styles.phaseSelector__container__item}>
+              <label htmlFor="phase1">1</label>
+              <input
+                ref={(el) => (filterCheckboxRef.current[0] = el)}
+                type="checkbox"
+                id="phase1"
+                onChange={() => addPhaseState(1)}
+              />
+            </div>
+            <div className={styles.phaseSelector__container__item}>
+              <label htmlFor="phase2">2</label>
+              <input
+                ref={(el) => (filterCheckboxRef.current[1] = el)}
+                type="checkbox"
+                id="phase2"
+                onChange={() => addPhaseState(2)}
+              />
+            </div>
+            <div className={styles.phaseSelector__container__item}>
+              <label htmlFor="phase3">3</label>
+              <input
+                ref={(el) => (filterCheckboxRef.current[2] = el)}
+                type="checkbox"
+                id="phase3"
+                onChange={() => addPhaseState(3)}
+              />
+            </div>
+            <div className={styles.phaseSelector__container__item}>
+              <label htmlFor="phase4">4</label>
+              <input
+                ref={(el) => (filterCheckboxRef.current[3] = el)}
+                type="checkbox"
+                id="phase4"
+                onChange={() => addPhaseState(4)}
+              />
+            </div>
           </div>
         </div>
       </div>

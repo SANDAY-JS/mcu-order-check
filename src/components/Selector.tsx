@@ -1,7 +1,10 @@
 import styles from "../styles/scss/Selector.module.scss";
 import { SHOWS_STATES } from "../utils/reducer";
 import { FcSearch } from "react-icons/fc";
-import { useEffect, useRef, useState } from "react";
+import { BsChevronDown } from "react-icons/bs";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import SortBox from "./SortBox";
 
 const Selector = ({
   dispatch,
@@ -17,11 +20,17 @@ const Selector = ({
   setIsDurationOrder,
   searchText,
   setSearchText,
+  animateVariables,
 }) => {
+  const tl = gsap.timeline({});
+  const [foldMenu, setFoldMenu] = useState<boolean>(false);
+
   const [checkboxAllChecked, setCheckboxAllChecked] = useState<boolean>(true);
   // checkboxRef in phaseState
   const searchInputRef = useRef(null);
   const filterCheckboxRef = useRef([]);
+  const foldButtonRef = useRef<HTMLDivElement>(null);
+  const foldMenuRef = useRef<HTMLDivElement>(null);
 
   const setAllPhases = () => {
     // uncheck other check boxes
@@ -99,59 +108,67 @@ const Selector = ({
     if (phaseState.length === 0) return setCheckboxAllChecked(true);
   }, [phaseState]);
 
+  useLayoutEffect(() => {
+    tl.addLabel("start")
+      .to(
+        foldButtonRef.current,
+        animateVariables.duration * 0.75,
+        {
+          rotate: foldMenu ? 540 : 0,
+          ease: animateVariables.ease,
+        },
+        "start"
+      )
+      .to(
+        foldMenuRef.current,
+        animateVariables.duration * 0.75,
+        { height: foldMenu ? 80 : "auto", ease: animateVariables.ease },
+        "start"
+      );
+  }, [foldMenu]);
+
   return (
-    <div className={styles.selector}>
-      <div className={styles.selector__itemContainer}>
-        <p className={styles.selector__itemContainer__title}>Sort</p>
-        {/* Release Order */}
-        <div
-          className={`${styles.changeOrder} ${isReleaseOrder && styles.active}`}
-          onClick={showReleaseOrder}
-        >
-          Release Date
-        </div>
-
-        {/* Chronology Order */}
-        <div
-          className={`${styles.changeOrder} ${
-            isChronologicalOrder && styles.active
-          }`}
-          onClick={showChronologicalOrder}
-        >
-          Chronology
-        </div>
-
-        {/* Box Office Order */}
-        <div
-          className={`${styles.changeOrder} ${
-            isBoxOfficeOrder && styles.active
-          }`}
-          onClick={showBoxOfficeOrder}
-        >
-          Box Office
-        </div>
-
-        {/* Box Office Order */}
-        <div
-          className={`${styles.changeOrder} ${
-            isDurationOrder && styles.active
-          }`}
-          onClick={showDurationOrder}
-        >
-          Duration
-        </div>
+    <div
+      ref={foldMenuRef}
+      className={`${styles.selector} ${foldMenu ? styles.folded : ""}`}
+    >
+      <div
+        ref={foldButtonRef}
+        onClick={() => setFoldMenu(!foldMenu)}
+        className={styles.selector__foldingButton}
+      >
+        <BsChevronDown />
       </div>
+
+      <SortBox
+        isReleaseOrder={isReleaseOrder}
+        showReleaseOrder={showReleaseOrder}
+        isChronologicalOrder={isChronologicalOrder}
+        showChronologicalOrder={showChronologicalOrder}
+        isBoxOfficeOrder={isBoxOfficeOrder}
+        showBoxOfficeOrder={showBoxOfficeOrder}
+        isDurationOrder={isDurationOrder}
+        showDurationOrder={showDurationOrder}
+        foldMenu={foldMenu}
+      />
 
       <div className={styles.selector__itemContainer}>
         <p className={styles.selector__itemContainer__title}>Filter</p>
         {/* Search Box */}
-        <div className={styles.searchContainer}>
+        <div
+          className={`${styles.searchContainer} ${
+            searchInputRef.current && searchInputRef.current.value.length > 0
+              ? styles.textLength
+              : ""
+          }`}
+        >
           <FcSearch className={styles.searchIcon} />
           <input
             ref={searchInputRef}
             type="text"
             onChange={handleSearch}
             className={styles.textInput}
+            // defaultValue={searchInput}
           />
         </div>
 
@@ -210,20 +227,6 @@ const Selector = ({
           </div>
         </div>
       </div>
-
-      {/* <div
-        className={styles.changeOrder}
-        onClick={() => dispatch(SHOWS_STATES.RELEASE_ORDER)}
-      >
-        Choose from Characters
-      </div> */}
-
-      {/* <div
-        className={styles.changeOrder}
-        onClick={() => dispatch(SHOWS_STATES.RELEASE_ORDER)}
-      >
-        Choose from Categories
-      </div> */}
 
       {/* Reset */}
       <div

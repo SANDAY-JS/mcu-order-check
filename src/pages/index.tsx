@@ -58,6 +58,7 @@ const Home: NextPage = ({ data }: any) => {
         setIsDurationOrder={setIsDurationOrder}
         searchText={searchText}
         setSearchText={setSearchText}
+        animateVariables={animateVariables}
       />
       <DataStatus
         data={data}

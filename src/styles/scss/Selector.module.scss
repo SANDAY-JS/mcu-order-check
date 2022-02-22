@@ -1,3 +1,5 @@
+@use "./SortBox.module.scss" as SortBox;
+
 $borderRadius: 8px;
 $BGColor: whitesmoke;
 
@@ -13,6 +15,26 @@ $BGColor: whitesmoke;
   flex-wrap: wrap;
   justify-content: center;
   gap: 2rem;
+
+  // When the selector menu is folded
+  &.folded {
+    .searchContainer:not(.textLength),
+    .selector__itemContainer__title,
+    .changeOrder:not(.active, .resetButton, .phaseSelector) {
+      opacity: 0;
+    }
+  }
+
+  .selector__foldingButton {
+    position: absolute;
+    right: 2rem;
+    top: 1rem;
+    cursor: pointer;
+
+    svg {
+      font-size: 1.6rem;
+    }
+  }
 
   .searchContainer {
     position: relative;
@@ -63,34 +85,7 @@ $BGColor: whitesmoke;
       text-align: center;
       padding-bottom: 2px;
       border-bottom: 1px solid #222;
-    }
-    .changeOrder {
-      display: flex;
-      justify-content: center;
-
-      width: 100%;
-      text-align: center;
-    }
-  }
-
-  // click buttons
-  .changeOrder {
-    cursor: pointer;
-    line-height: 1.3;
-    font-size: 1.2rem;
-
-    padding: 4px 12px;
-    border-radius: $borderRadius;
-    background-color: $BGColor;
-
-    &.resetButton {
-      position: absolute;
-      right: 20px;
-      bottom: 12px;
-    }
-
-    &.active {
-      background-color: rgb(189, 189, 189);
+      transition: opacity 0.4s ease-in-out;
     }
   }
 
@@ -164,6 +159,21 @@ $BGColor: whitesmoke;
           }
         }
       }
+    }
+  }
+
+  .resetButton {
+    position: absolute;
+    right: 20px;
+    bottom: 12px;
+
+    padding: 4px 12px;
+    background-color: $BGColor;
+    border-radius: $borderRadius;
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgb(189, 189, 189);
     }
   }
 }

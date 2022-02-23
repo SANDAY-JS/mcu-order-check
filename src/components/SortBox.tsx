@@ -1,20 +1,58 @@
 import gsap from "gsap";
-import { useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import styles from "../styles/scss/SortBox.module.scss";
+import { SHOWS_STATES } from "../utils/reducer";
 
 const SortBox = ({
+  dispatch,
   isReleaseOrder,
-  showReleaseOrder,
   isChronologicalOrder,
-  showChronologicalOrder,
   isBoxOfficeOrder,
-  showBoxOfficeOrder,
   isDurationOrder,
-  showDurationOrder,
   foldMenu,
+  setIsReleaseOrder,
+  setIsChronologicalOrder,
+  setIsBoxOfficeOrder,
+  setIsDurationOrder,
+  animateVariables,
 }) => {
   const tl = gsap.timeline({});
   const sortMethodRef = useRef([]);
+
+  const [isDispleyNone, setIsDisplayNone] = useState<boolean>(false);
+
+  const resetCurrentOrder = () => {
+    setIsReleaseOrder(false);
+    setIsChronologicalOrder(false);
+    setIsBoxOfficeOrder(false);
+    setIsDurationOrder(false);
+  };
+
+  const showReleaseOrder = () => {
+    resetCurrentOrder();
+
+    setIsReleaseOrder(!isReleaseOrder);
+    return dispatch(SHOWS_STATES.RELEASE_ORDER);
+  };
+  const showBoxOfficeOrder = () => {
+    resetCurrentOrder();
+
+    setIsBoxOfficeOrder(!isBoxOfficeOrder);
+    return dispatch(SHOWS_STATES.BOX_OFFICE);
+  };
+  const showChronologicalOrder = () => {
+    resetCurrentOrder();
+
+    setIsChronologicalOrder(!isChronologicalOrder);
+    return dispatch(SHOWS_STATES.CHRONOLOGY);
+  };
+  const showDurationOrder = () => {
+    resetCurrentOrder();
+
+    setIsDurationOrder(!isDurationOrder);
+    return dispatch(SHOWS_STATES.DURATION);
+  };
+
   const sortMethodElements = [
     <div
       ref={(el) => (sortMethodRef.current[0] = el)}
@@ -61,20 +99,30 @@ const SortBox = ({
   ];
 
   useLayoutEffect(() => {
-    if (sortMethodRef.current[0]?.classList.length !== 4) return;
-    tl.to(
-      sortMethodRef.current,
-      0.3,
-      { opacity: 1, position: "absolute", y: "-50%", top: "25%" },
-      0.2
-    );
+    if (sortMethodRef.current[0]?.classList.length !== 4) {
+      foldMenu ? setIsDisplayNone(true) : setIsDisplayNone(false);
+      return;
+    }
+
+    if (isDispleyNone) {
+      setIsDisplayNone(false);
+    }
+
+    tl.to(sortMethodRef.current, animateVariables.duration, {
+      opacity: 1,
+      ease: animateVariables.ease,
+    });
   }, [foldMenu]);
   return (
-    <div className={styles.selector__itemContainer}>
+    <div
+      className={`${styles.selector__itemContainer} ${
+        foldMenu ? styles.disablePadding : ""
+      } ${isDispleyNone ? styles.displayNone : ""}`}
+    >
       {foldMenu ? (
         <>
           {sortMethodRef.current.map((el: HTMLDivElement, i) => {
-            if (!el.classList.contains(styles.active)) return;
+            if (!el?.classList.contains(styles.active)) return;
             return sortMethodElements[i];
           })}
         </>

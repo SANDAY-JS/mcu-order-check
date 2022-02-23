@@ -8,6 +8,14 @@ $BGColor: whitesmoke;
   flex-direction: column;
   gap: 1rem;
   width: min(200px, 80%);
+  padding-bottom: 40px;
+
+  &.disablePadding {
+    padding-bottom: 0;
+  }
+  &.displayNone {
+    display: none;
+  }
 
   .selector__itemContainer__title {
     width: 100%;
@@ -19,6 +27,7 @@ $BGColor: whitesmoke;
 
   .unvisible:not(.active) {
     opacity: 0;
+    padding-bottom: 0;
   }
 
   // click buttons
@@ -77,6 +86,7 @@ $BGColor: whitesmoke;
 
     &.chosenMenu {
       opacity: 0;
+      pointer-events: none;
     }
   }
 }

@@ -1,9 +1,24 @@
 import gsap from "gsap";
-import { useLayoutEffect, useRef, useState } from "react";
+import { NextPage } from "next";
+import { FC, useLayoutEffect, useRef, useState } from "react";
 import styles from "../styles/scss/SortBox.module.scss";
 import { SHOWS_STATES } from "../utils/reducer";
 
-const SortBox = ({
+interface Props {
+  dispatch: Function;
+  isReleaseOrder: boolean;
+  isChronologicalOrder: boolean;
+  isBoxOfficeOrder: boolean;
+  isDurationOrder: boolean;
+  setIsReleaseOrder: Function;
+  setIsChronologicalOrder: Function;
+  setIsBoxOfficeOrder: Function;
+  setIsDurationOrder: Function;
+  foldMenu: boolean;
+  animateVariables: any;
+}
+
+const SortBox: NextPage<Props> = ({
   dispatch,
   isReleaseOrder,
   isChronologicalOrder,

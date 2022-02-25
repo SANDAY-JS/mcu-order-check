@@ -12,6 +12,31 @@ $BGColor: whitesmoke;
   background-color: $BGColor;
   border-radius: $borderRadius;
 
+  &.foldMenu {
+    position: relative;
+    flex-direction: row;
+    width: fit-content;
+
+    > p::after {
+      content: " :";
+    }
+
+    .phaseSelector__container {
+      &__item {
+        label {
+          span,
+          input {
+            display: none;
+          }
+
+          span.currentPhase {
+            display: block;
+          }
+        }
+      }
+    }
+  }
+
   > p {
     margin: 0;
   }
@@ -33,6 +58,8 @@ $BGColor: whitesmoke;
       pointer-events: all;
 
       label {
+        display: flex;
+        align-items: center;
         cursor: pointer;
       }
 

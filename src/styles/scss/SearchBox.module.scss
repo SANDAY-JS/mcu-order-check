@@ -15,6 +15,10 @@ $BGColor: whitesmoke;
   border-radius: $borderRadius;
   overflow: hidden;
 
+  &.foldMenu {
+    flex: 1;
+  }
+
   &.displayNone {
     display: none;
   }
@@ -46,6 +50,5 @@ $BGColor: whitesmoke;
 
     font-size: 2rem;
     cursor: pointer;
-    z-index: 1;
   }
 }

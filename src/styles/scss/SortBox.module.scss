@@ -8,11 +8,14 @@ $BGColor: whitesmoke;
   flex-direction: column;
   gap: 1rem;
   width: min(200px, 80%);
-  padding-bottom: 40px;
 
-  &.disablePadding {
-    padding-bottom: 0;
+  @media screen and (min-width: 441px) {
+    padding-bottom: 40px;
+    &.disablePadding {
+      padding-bottom: 0;
+    }
   }
+
   &.displayNone {
     display: none;
   }
@@ -22,7 +25,6 @@ $BGColor: whitesmoke;
     text-align: center;
     padding-bottom: 2px;
     border-bottom: 1px solid #222;
-    transition: opacity 0.4s ease-in-out;
   }
 
   .unvisible:not(.active) {

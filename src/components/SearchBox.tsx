@@ -27,17 +27,12 @@ const SearchBox = ({
       setIsDisplayNone(false);
     }
 
-    if (foldMenu) {
-      tl.to(
-        searchInputRef.current,
-        0.1,
-        { opacity: 0, ease: animateVariables.ease },
-        "start"
-      );
-    }
+    if (!foldMenu) return;
+
+    tl.set(searchBoxRef.current, { opacity: 0 }, "start");
     tl.to(
-      searchInputRef.current,
-      animateVariables.duration * 0.75,
+      searchBoxRef.current,
+      animateVariables.duration * 2.5,
       { opacity: 1, ease: animateVariables.ease },
       "start+=.2"
     );
@@ -49,6 +44,8 @@ const SearchBox = ({
       <div
         ref={searchBoxRef}
         className={`${styles.searchContainer} ${
+          foldMenu ? styles.foldMenu : ""
+        } ${
           searchInputRef.current && searchInputRef.current.value.length > 0
             ? styles.textLength
             : ""
@@ -61,6 +58,7 @@ const SearchBox = ({
           onChange={handleSearch}
           className={styles.textInput}
           // defaultValue={searchInput}
+          disabled={foldMenu}
         />
       </div>
     </>

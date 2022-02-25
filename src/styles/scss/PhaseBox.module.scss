@@ -16,17 +16,23 @@ $BGColor: whitesmoke;
     position: relative;
     flex-direction: row;
     width: fit-content;
+    cursor: default;
 
     > p::after {
       content: " :";
     }
 
     .phaseSelector__container {
+      cursor: default;
       &__item {
         label {
+          cursor: default;
+          pointer-events: none;
           span,
           input {
             display: none;
+            cursor: default;
+            pointer-events: none;
           }
 
           span.currentPhase {

@@ -71,17 +71,30 @@ const Selector: NextPage<Props> = ({
     return dispatch(SHOWS_STATES.RESET);
   };
 
-  const checkContainerHeight = () => {
-    if (containerHeight === undefined) {
-      return foldMenu ? 80 : width > 440 ? 250 : 380;
-    }
-    return foldMenu ? 80 : containerHeight;
+  const checkMenuHeight = () => {
+    // Search Text has no Length or iPad/PC or There's no sort state
+    if (
+      width > 500 ||
+      !hasAnySortState ||
+      searchInputRef.current.value.length === 0
+    )
+      return 80;
+    // There's some Search Text
+    return 94;
+  };
+  const hasAnySortState = () => {
+    if (
+      isBoxOfficeOrder ||
+      isChronologicalOrder ||
+      isDurationOrder ||
+      isReleaseOrder
+    )
+      return true;
+    return false;
   };
 
   useEffect(() => {
-    width > 440
-      ? setContainerHeight(foldMenuRef.current.clientHeight + 24)
-      : setContainerHeight(foldMenuRef.current.clientHeight);
+    setContainerHeight(foldMenuRef.current.clientHeight);
   }, [width]);
 
   useLayoutEffect(() => {
@@ -104,7 +117,7 @@ const Selector: NextPage<Props> = ({
         foldMenuRef.current,
         animateVariables.duration,
         {
-          height: checkContainerHeight,
+          height: foldMenu ? checkMenuHeight : containerHeight,
           ease: animateVariables.ease,
         },
         "start"
@@ -114,7 +127,6 @@ const Selector: NextPage<Props> = ({
   return (
     <div
       ref={foldMenuRef}
-      style={{ height: width > 440 ? containerHeight : "auto" }}
       className={`${styles.selector} ${foldMenu ? styles.foldMenu : ""}`}
     >
       <div
@@ -167,7 +179,7 @@ const Selector: NextPage<Props> = ({
       {/* Reset */}
       {!foldMenu && (
         <div
-          className={`${styles.changeOrder} ${styles.resetButton}`}
+          className={`${styles.changeOrder} ${styles.selector__resetButton}`}
           onClick={resetShows}
         >
           Reset

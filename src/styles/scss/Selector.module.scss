@@ -1,6 +1,4 @@
-@use "./variables" as variables;
-$borderRadius: 8px;
-$BGColor: whitesmoke;
+@use "./shared/variables" as variables;
 
 .selector {
   position: relative;

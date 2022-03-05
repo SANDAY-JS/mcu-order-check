@@ -1,5 +1,4 @@
-$borderRadius: 8px;
-$BGColor: whitesmoke;
+@use "./shared/variables" as variables;
 
 .phaseSelector {
   display: flex;
@@ -9,8 +8,8 @@ $BGColor: whitesmoke;
 
   width: 100%;
   padding: 4px 12px;
-  background-color: $BGColor;
-  border-radius: $borderRadius;
+  background-color: variables.$buttonBGColor;
+  border-radius: variables.$buttonBorderRadius;
 
   &.foldMenu {
     position: relative;
@@ -100,7 +99,7 @@ $BGColor: whitesmoke;
 
           width: 4px;
           height: 75%;
-          border: solid rgb(255, 255, 255);
+          border: solid variables.$phaseBoxCheckMarkColor;
           transform: rotate(45deg);
           border-width: 0 3px 3px 0;
         }

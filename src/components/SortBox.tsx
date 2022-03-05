@@ -134,6 +134,8 @@ const SortBox: NextPage<Props> = ({
         foldMenu ? styles.disablePadding : ""
       } ${isDispleyNone ? styles.displayNone : ""}`}
     >
+      {console.log("entire dom")}
+
       {foldMenu ? (
         <>
           {sortMethodRef.current.map((el: HTMLDivElement, i) => {

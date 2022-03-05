@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from "react";
+import { useCallback, useLayoutEffect, useRef } from "react";
 import { MdOutlineDarkMode } from "react-icons/md";
 import { ImSun } from "react-icons/im";
 import styles from "../styles/scss/Header.module.scss";
@@ -8,6 +8,11 @@ const Header = ({ darkMode, setDarkMode, animateVariables }) => {
   const firstUpdate = useRef(true);
 
   const tl = gsap.timeline({});
+
+  const onChangeDarkMode = useCallback(
+    () => setDarkMode(!darkMode),
+    [darkMode]
+  );
 
   useLayoutEffect(() => {
     if (firstUpdate.current) {
@@ -66,7 +71,7 @@ const Header = ({ darkMode, setDarkMode, animateVariables }) => {
           id="switch"
           type="checkbox"
           className={styles.switch}
-          onClick={() => setDarkMode(!darkMode)}
+          onClick={onChangeDarkMode}
         />
         <label htmlFor="switch">
           <ImSun

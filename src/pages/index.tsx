@@ -13,6 +13,8 @@ const Home: NextPage = ({ data }: any) => {
 
   // dark mode
   const [darkMode, setDarkMode] = useState<boolean>(false);
+
+  // animation variables
   const animateVariables = {
     white: "#fafafa",
     black: "#222222",
@@ -23,6 +25,7 @@ const Home: NextPage = ({ data }: any) => {
   // phase state
   const [phaseState, setPhaseState] = useState<number[]>([]);
 
+  // sort states
   const [isReleaseOrder, setIsReleaseOrder] = useState<boolean>(false);
   const [isBoxOfficeOrder, setIsBoxOfficeOrder] = useState<boolean>(false);
   const [isChronologicalOrder, setIsChronologicalOrder] =

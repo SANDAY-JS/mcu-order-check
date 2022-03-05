@@ -1,7 +1,13 @@
 import styles from "../styles/scss/Selector.module.scss";
 import { SHOWS_STATES } from "../utils/reducer";
 import { BsChevronDown } from "react-icons/bs";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, {
+  memo,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import gsap from "gsap";
 import SortBox from "./SortBox";
 import PhaseBox from "./PhaseBox";
@@ -188,5 +194,4 @@ const Selector: NextPage<Props> = ({
     </div>
   );
 };
-
-export default Selector;
+export default memo(Selector);

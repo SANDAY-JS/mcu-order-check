@@ -1,5 +1,4 @@
-$borderRadius: 8px;
-$BGColor: whitesmoke;
+@use "./shared/variables" as variables;
 
 .selector__itemContainer {
   position: relative;
@@ -41,8 +40,8 @@ $BGColor: whitesmoke;
     width: 100%;
     padding: 4px 12px;
     text-align: center;
-    background-color: $BGColor;
-    border-radius: $borderRadius;
+    background-color: variables.$buttonBGColor;
+    border-radius: variables.$buttonBorderRadius;
 
     cursor: pointer;
     overflow: hidden;
@@ -52,7 +51,7 @@ $BGColor: whitesmoke;
 
     &.active {
       border: 1px solid #222;
-      background-color: rgb(189, 189, 189);
+      background-color: variables.$buttonHoveredBGColor;
 
       &::after {
         opacity: 0;
@@ -80,7 +79,7 @@ $BGColor: whitesmoke;
       transform: scaleX(0);
       transform-origin: left;
       transition: transform 0.4s ease-in-out;
-      background-color: rgb(189, 189, 189);
+      background-color: variables.$buttonHoveredBGColor;
     }
     &:not(.active):hover::after {
       transform: scaleX(1);

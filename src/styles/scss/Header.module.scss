@@ -10,7 +10,7 @@
   align-items: center;
   justify-content: center;
 
-  background-color: skyblue;
+  background-color: #ff7800;
 
   @media screen and (min-width: 768px) {
     justify-content: space-between;
@@ -18,22 +18,29 @@
 
   .createdBy {
     position: absolute;
-    top: 0;
-    left: 8px;
+    top: 4px;
+    left: calc(1rem + 8px);
     font-size: small;
+    color: #fafafa;
 
     @media screen and (min-width: 768px) {
       position: unset;
     }
 
     a {
+      color: inherit;
       text-decoration: underline;
     }
   }
 
   h2 {
+    color: #fafafa;
     font-size: 2rem;
-    text-align: center;
+    margin-right: auto;
+    margin-left: 1rem;
+    @media screen and (min-width: 768px) {
+      margin: 0;
+    }
   }
 
   /* === ボタンを表示するエリア ============== */

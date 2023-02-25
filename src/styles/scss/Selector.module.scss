@@ -105,8 +105,8 @@ $BGColor: whitesmoke;
 
     .phaseSelector__container {
       display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
+      // flex-wrap: wrap;
+      gap: 2px;
 
       cursor: default;
       pointer-events: none;

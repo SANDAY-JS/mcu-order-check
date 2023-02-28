@@ -207,6 +207,15 @@ const Selector = ({
                 onChange={() => addPhaseState(4)}
               />
             </div>
+            <div className={styles.phaseSelector__container__item}>
+              <label htmlFor="phase4">5</label>
+              <input
+                ref={(el) => (filterCheckboxRef.current[4] = el)}
+                type="checkbox"
+                id="phase5"
+                onChange={() => addPhaseState(5)}
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@ import Image from "next/image";
 import { gsap, Linear } from "gsap";
 
 import styles from "../styles/scss/InitialShows.module.scss";
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 const InitialShows = ({ baseShowsArr, noPicture }) => {
   const containerRef = useRef(null);
@@ -17,6 +17,34 @@ const InitialShows = ({ baseShowsArr, noPicture }) => {
     });
   }, []);
 
+  // 画像URL
+  const [imageSrces, setImageSrces] = useState<string[]>(baseShowsArr.map((show) => show.cover_url || noPicture))
+  useEffect(() => {
+    (async() => {
+      // 同期で画像URLセット
+      const cover_urls = baseShowsArr.map((show) => show.cover_url || noPicture)
+      setImageSrces(cover_urls)
+
+      // 非同期で画像のバリデーションチェックｰ>セット
+      const validImagesSrc = cover_urls.map(async(url) => {
+        const result = await urlExists(url)
+        if(result) return url;
+        return noPicture;
+      })
+      console.log("🚀 ~ file: InitialShows.tsx:34 ~ validImagesSrc ~ validImagesSrc:", validImagesSrc)
+      setImageSrces(validImagesSrc)
+    })()
+  }, [baseShowsArr])
+
+  // 画像URLが存在するか否か
+  const urlExists = async (url: string) => {
+    var http = new XMLHttpRequest();
+    http.open('HEAD', url, false);
+    http.send();
+    return http.status !=404;
+  }
+
+
   return (
     <div ref={containerRef} className={styles.initialShowsContainer}>
       <div
@@ -30,7 +58,7 @@ const InitialShows = ({ baseShowsArr, noPicture }) => {
               className={styles.initialShowContainer__showItem__imageWrap}
             >
               <Image
-                src={show.cover_url ?? noPicture}
+                src={imageSrces[i]}
                 alt={show.title}
                 width={256}
                 height={379}
